@@ -146,8 +146,11 @@ const SignaturePad = ({ label, onSave, onClear, t }) => {
             clientY = e.touches[0].clientY;
         }
 
-        const x = clientX - rect.left;
-        const y = clientY - rect.top;
+        const scaleX = canvas.width / rect.width;
+        const scaleY = canvas.height / rect.height;
+
+        const x = (clientX - rect.left) * scaleX;
+        const y = (clientY - rect.top) * scaleY;
 
         ctx.lineWidth = 2;
         ctx.lineCap = "round";
@@ -202,7 +205,7 @@ const GradeStep = ({ formData, updateFormData, t }) => (
                 <div className="space-y-6">
                     <div>
                         <span className="text-[9px] font-bold uppercase tracking-widest text-dark/20 block mb-3">{t.primary_phase}</span>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                             {['R', '1', '2', '3', '4', '5', '6', '7'].map(grade => (
                                 <button
                                     key={grade}
@@ -219,7 +222,7 @@ const GradeStep = ({ formData, updateFormData, t }) => (
                     </div>
                     <div>
                         <span className="text-[9px] font-bold uppercase tracking-widest text-dark/20 block mb-3">{t.secondary_phase}</span>
-                        <div className="grid grid-cols-5 gap-2">
+                        <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
                             {['8', '9', '10', '11', '12'].map(grade => (
                                 <button
                                     key={grade}

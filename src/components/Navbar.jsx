@@ -147,7 +147,7 @@ const Navbar = () => {
                             </button>
                         </div>
 
-                        <div className="flex flex-col gap-12 mt-12">
+                        <div className="flex flex-col gap-6 sm:gap-12 mt-8 sm:mt-12">
                             {[
                                 { name: t.nav.our_school, href: "/about" },
                                 { name: t.nav.noticeboard, href: "/news" },
@@ -159,7 +159,7 @@ const Navbar = () => {
                                     key={item.name}
                                     to={item.href}
                                     onClick={() => setIsMobileMenuOpen(false)}
-                                    className="text-5xl font-display font-medium text-white tracking-tighter hover:text-accent transition-colors duration-500"
+                                    className="text-3xl sm:text-5xl font-display font-medium text-white tracking-tighter hover:text-accent transition-colors duration-500"
                                 >
                                     {item.name}
                                 </Link>
