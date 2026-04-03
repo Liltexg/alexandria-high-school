@@ -1,0 +1,178 @@
+﻿
+> alexandria-high-school@0.0.0 lint
+> eslint .
+
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\delete-test-applications.js
+   2:15  error  'require' is not defined  no-undef
+  52:17  error  'process' is not defined  no-undef
+  53:18  error  'process' is not defined  no-undef
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\download-image.js
+  31:9  error  'process' is not defined  no-undef
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\execute-migration.js
+   6:30  error  'process' is not defined  no-undef
+  19:41  error  'process' is not defined  no-undef
+  23:5   error  'process' is not defined  no-undef
+  43:44  error  'process' is not defined  no-undef
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\fix-rls.js
+  2:8  error  'path' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\remote-setup.js
+   5:10  error  'fileURLToPath' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+   6:8   error  'dotenv' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+   9:30  error  'process' is not defined                                                              no-undef
+  30:5   error  'process' is not defined                                                              no-undef
+  74:13  error  'data' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\run-migration.js
+   7:30  error  'process' is not defined  no-undef
+  20:41  error  'process' is not defined  no-undef
+  27:5   error  'process' is not defined  no-undef
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\About.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\AcademicPaths.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\AchievementsRibbon.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Admissions.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Alumni.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Calendar.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Contact.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\CustomDialog.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\FloatingMenu.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Footer.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Hero.jsx
+   2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                   no-unused-vars
+  41:11  error  'letterVariants' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\HighSchool.jsx
+  4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\LatestUpdates.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Login.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                no-unused-vars
+  9:12  error  'formData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u     no-unused-vars
+  9:22  error  'setFormData' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\MissionRed.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Navbar.jsx
+    2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u             no-unused-vars
+   10:11  error  'location' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  118:42  error  'i' is defined but never used                                                             no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\News.jsx
+   2:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                 no-unused-vars
+   8:12  error    'error' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u                         no-unused-vars
+  70:18  error    'err' is defined but never used                                                                               no-unused-vars
+  81:8   warning  React Hook useEffect has a missing dependency: 'fetchNews'. Either include it or remove the dependency array  react-hooks/exhaustive-deps
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Orientation.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\PageHero.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\PrimarySchool.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Staff.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\components\Summer.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\Apply.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\NewsDetail.jsx
+   4:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  33:41  error  'category' is defined but never used                                           no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\PublicNews.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\PublicNotices.jsx
+  3:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\Applications.jsx
+   26:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+   27:10  error  'jsPDF' is defined but never used. Allowed unused vars must match /^[A-Z_]/u          no-unused-vars
+   29:64  error  'getCallScript' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  256:53  error  'Icon' is defined but never used                                                      no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\Dashboard.jsx
+  2:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+  6:53  error  'Icon' is defined but never used                                               no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\Login.jsx
+   6:10  error  'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u         no-unused-vars
+  21:21  error  'data' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\News.jsx
+   4:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          no-unused-vars
+  41:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  39 |
+  40 |     useEffect(() => {
+> 41 |         fetchNews();
+     |         ^^^^^^^^^ Avoid calling setState() directly within an effect
+  42 |
+  43 |         const channel = supabase
+  44 |             .channel('smt-news')  react-hooks/set-state-in-effect
+  51:8   warning  React Hook useEffect has a missing dependency: 'fetchNews'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           react-hooks/exhaustive-deps
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\Notices.jsx
+   4:10  error    'motion' is defined but never used. Allowed unused vars must match /^[A-Z_]/u                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   no-unused-vars
+  42:9   error    Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+  40 |
+  41 |     useEffect(() => {
+> 42 |         fetchNotices();
+     |         ^^^^^^^^^^^^ Avoid calling setState() directly within an effect
+  43 |
+  44 |         const channel = supabase
+  45 |             .channel('smt-notices')  react-hooks/set-state-in-effect
+  52:8   warning  React Hook useEffect has a missing dependency: 'fetchNotices'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 react-hooks/exhaustive-deps
+
+C:\Users\Senzo\.gemini\antigravity\scratch\alexandria-high-school\src\pages\smt\WebsiteManagement.jsx
+  76:11  error  'handleUpdateSlide' is assigned a value but never used. Allowed unused vars must match /^[A-Z_]/u  no-unused-vars
+
+Γ£û 67 problems (64 errors, 3 warnings)
+
