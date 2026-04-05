@@ -176,6 +176,7 @@ const Applications = () => {
                     }
 
                     setSelectedApp(null);
+                    setApplications(prev => prev.filter(app => app.id !== id));
                     fetchApplications();
 
                     // Small delay to ensure the animations feel right

@@ -159,6 +159,7 @@ const Notices = () => {
                         });
                     }, 300);
                 } else {
+                    setNotices(prev => prev.filter(n => n.id !== id));
                     fetchNotices();
                     setTimeout(() => {
                         setDialog({

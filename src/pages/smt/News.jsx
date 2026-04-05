@@ -98,6 +98,7 @@ const News = () => {
                         });
                     }, 300);
                 } else {
+                    setNews(prev => prev.filter(n => n.id !== id));
                     fetchNews();
                     setTimeout(() => {
                         setDialog({
