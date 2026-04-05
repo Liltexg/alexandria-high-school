@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
-import { Plus, Search, Filter, Edit2, Archive, CheckCircle, Clock, FileText, X, Loader2 } from 'lucide-react';
+import { Plus, Search, Filter, Edit2, Trash2, Archive, CheckCircle, Clock, FileText, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import NoticeForm from '../../components/smt/NoticeForm';
 import NewsForm from '../../components/smt/NewsForm';
@@ -132,6 +132,44 @@ const Notices = () => {
         });
     };
 
+    const handleDelete = async (id) => {
+        setDialog({
+            isOpen: true,
+            type: 'error',
+            title: 'Delete Notice',
+            message: 'Are you sure you want to permanently delete this notice? This action is irreversible.',
+            confirmText: 'Delete',
+            cancelText: 'Cancel',
+            onConfirm: async () => {
+                const { error } = await supabase
+                    .from('notices')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    setDialog({
+                        isOpen: true,
+                        type: 'error',
+                        title: 'System Error',
+                        message: 'Failed to eliminate notice record.',
+                        confirmText: 'OK',
+                        onConfirm: null
+                    });
+                } else {
+                    fetchNotices();
+                    setDialog({
+                        isOpen: true,
+                        type: 'success',
+                        title: 'Record Eliminated',
+                        message: 'The notice has been purged from the database.',
+                        confirmText: 'OK',
+                        onConfirm: null
+                    });
+                }
+            }
+        });
+    };
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'active': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
@@ -233,8 +271,9 @@ const Notices = () => {
                                 <div className="flex items-center gap-2 self-start md:self-center border-t md:border-t-0 md:border-l border-[#d8e6f3] pt-4 md:pt-0 md:pl-5 w-full md:w-auto justify-end relative z-10">
                                     <button onClick={() => handleEdit(notice)} className="win7-button !px-2.5" title="Edit"><Edit2 size={14} /></button>
                                     <button onClick={() => handlePromote(notice)} className="win7-button !px-2.5" title="Promote"><Plus size={14} /></button>
+                                    <button onClick={() => handleDelete(notice.id)} className="win7-button !px-2.5 border-red-200 hover:border-red-400" title="Delete"><Trash2 size={14} className="text-red-600" /></button>
                                     {notice.status !== 'archived' && (
-                                        <button onClick={() => handleArchive(notice.id)} className="win7-button !px-2.5 border-red-200 hover:border-red-400" title="Archive"><Archive size={14} className="text-red-600" /></button>
+                                        <button onClick={() => handleArchive(notice.id)} className="win7-button !px-2.5" title="Archive"><Archive size={14} /></button>
                                     )}
                                 </div>
                             </motion.div>

@@ -86,9 +86,24 @@ const News = () => {
 
                 if (error) {
                     console.error('Error deleting article:', error);
-                    alert('Failed to delete article. Please try again.');
+                    setDialog({
+                        isOpen: true,
+                        type: 'error',
+                        title: 'Selection Error',
+                        message: 'Failed to delete record. Please check your system permissions.',
+                        confirmText: 'OK',
+                        onConfirm: null
+                    });
                 } else {
                     fetchNews();
+                    setDialog({
+                        isOpen: true,
+                        type: 'success',
+                        title: 'Record Eliminated',
+                        message: 'The article has been permanently removed from the mainframe.',
+                        confirmText: 'OK',
+                        onConfirm: null
+                    });
                 }
             }
         });
