@@ -54,6 +54,16 @@ const Applications = () => {
     const [updatingStatus, setUpdatingStatus] = useState(false);
     const [activeTab, setActiveTab] = useState('Overview');
     const [dialog, setDialog] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 1024);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     useEffect(() => {
         fetchApplications();
@@ -306,6 +316,91 @@ const Applications = () => {
             </div>
         </div>
     );
+
+    if (isMobile) {
+        return (
+            <div className="fixed inset-0 z-[200] bg-white flex items-center justify-center p-6 text-center overflow-hidden">
+                <div className="absolute inset-0 bg-[#f0f5fa]/30 -z-10" />
+                <div className="absolute top-0 left-0 w-full h-[3px] bg-primary/30" />
+                
+                <div className="space-y-8 max-w-sm mx-auto">
+                    {/* Animated Sad Avatar/Flag */}
+                    <motion.div 
+                        initial={{ scale: 0.8, opacity: 0 }}
+                        animate={{ 
+                            scale: [0.8, 1.05, 1],
+                            opacity: 1,
+                            y: [0, -10, 0]
+                        }}
+                        transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+                        className="relative w-32 h-32 mx-auto"
+                    >
+                        <div className="absolute inset-0 bg-primary/10 rounded-full animate-pulse" />
+                        <div className="relative z-10 w-full h-full rounded-2xl bg-white border-4 border-primary/20 shadow-xl flex items-center justify-center overflow-hidden">
+                            <motion.span 
+                                animate={{ rotate: [0, 10, -10, 0] }}
+                                transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
+                                className="text-6xl"
+                            >
+                                🚩
+                            </motion.span>
+                        </div>
+                    </motion.div>
+
+                    <div className="space-y-4">
+                        <motion.h1 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="text-2xl font-black text-[#003399] uppercase tracking-tighter"
+                        >
+                            Oh... wait! iesh
+                        </motion.h1>
+                        <motion.p 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.3 }}
+                            className="text-slate-500 font-bold text-sm tracking-tight leading-relaxed"
+                        >
+                            seems like u are on mobile. Unfortunety Applicaion panel is tooo big for mobile. please use destop
+                        </motion.p>
+                    </div>
+
+                    <div className="pt-8 border-t border-slate-100 flex flex-col gap-3">
+                        <button 
+                            onClick={() => window.location.href = '/'}
+                            className="text-[10px] font-black uppercase tracking-[0.3em] text-primary hover:text-dark transition-colors"
+                        >
+                            ← Return to Portal
+                        </button>
+                        <p className="text-[10px] font-bold text-slate-300 uppercase tracking-widest mt-8">
+                            --- Dev Senzo
+                        </p>
+                    </div>
+                    
+                    {/* Floating Avatars */}
+                    <div className="absolute inset-0 overflow-hidden -z-20 pointer-events-none">
+                        {[1, 2, 3, 4].map((i) => (
+                            <motion.div
+                                key={i}
+                                initial={{ opacity: 0, x: Math.random() * 400 - 200, y: Math.random() * 400 - 200 }}
+                                animate={{ 
+                                    opacity: [0, 0.1, 0],
+                                    x: [Math.random() * 400 - 200, Math.random() * 400 - 200],
+                                    y: [Math.random() * 400 - 200, Math.random() * 400 - 200],
+                                    scale: [0.5, 1, 0.5]
+                                }}
+                                transition={{ duration: 5 + i, repeat: Infinity, ease: "linear" }}
+                                className="absolute text-4xl grayscale opacity-10"
+                            >
+                                👤
+                            </motion.div>
+                        ))}
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 pb-20 max-w-6xl mx-auto drop-shadow-sm">
