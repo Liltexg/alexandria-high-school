@@ -66,7 +66,8 @@ const AppContents = () => {
   const location = useLocation();
   const isLoginPage = location.pathname === '/login';
   const isSMTPage = location.pathname.startsWith('/smt');
-  const showPublicNav = !isLoginPage && !isSMTPage;
+  const isApplyPage = location.pathname === '/apply';
+  const showPublicNav = !isLoginPage && !isSMTPage && !isApplyPage;
 
   return (
     <div className="min-h-screen bg-light font-sans text-dark">
