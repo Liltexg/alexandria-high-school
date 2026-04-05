@@ -159,7 +159,7 @@ const WebsiteManagement = () => {
     if (loading) return (
         <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
             <RefreshCw size={32} className="animate-spin text-[#0055cc] opacity-40" />
-            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em]">Initializing Repository...</p>
+            <p className="text-[11px] font-black text-slate-400 uppercase tracking-[0.4em]">Loading Slides...</p>
         </div>
     );
 
@@ -169,9 +169,9 @@ const WebsiteManagement = () => {
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 border-b-2 border-[#b9d1ea] pb-8 relative">
                 <div>
                     <h1 className="text-[28px] font-black text-[#003399] tracking-tight mb-2 flex items-center gap-3 drop-shadow-sm uppercase">
-                        <ImageIcon className="text-[#0055cc]" size={32} /> Website Architecture
+                        <ImageIcon className="text-[#0055cc]" size={32} /> Front Page Manager
                     </h1>
-                    <p className="text-[11px] text-slate-500 font-black tracking-[0.2em] uppercase">Core Visual Dissemination & Hero Protocols</p>
+                    <p className="text-[11px] text-slate-500 font-black tracking-[0.2em] uppercase">Customize your main website banners and slides</p>
                 </div>
                 
                 {slides.length === 0 && (
@@ -181,7 +181,7 @@ const WebsiteManagement = () => {
                         className="win7-button !bg-blue-50 !border-blue-200 !text-blue-700 hover:!bg-blue-100 flex items-center gap-2"
                     >
                         {importing ? <Loader2 size={14} className="animate-spin" /> : <RefreshCw size={14} />}
-                        Import Institutional Defaults
+                        Load Original School Slides
                     </button>
                 )}
             </div>
@@ -194,14 +194,14 @@ const WebsiteManagement = () => {
                             <div className="w-8 h-8 bg-blue-600 rounded-[2px] flex items-center justify-center shadow-lg">
                                 <Plus size={18} className="text-white" />
                             </div>
-                            <span className="text-[11px] font-black text-[#003399] uppercase tracking-widest">Inject New Sequence</span>
+                            <span className="text-[11px] font-black text-[#003399] uppercase tracking-widest">Add New Slide</span>
                         </div>
                     </div>
 
                     <form onSubmit={handleAddSlide} className="p-8 space-y-6">
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Source URL (Resolution Optimized)</label>
+                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Image Link (High Quality)</label>
                                 <input
                                     type="text"
                                     value={newSlide.image}
@@ -214,7 +214,7 @@ const WebsiteManagement = () => {
 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Classification Tag</label>
+                                    <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Label (e.g. ADMISSIONS)</label>
                                     <input
                                         type="text"
                                         value={newSlide.tag}
@@ -225,7 +225,7 @@ const WebsiteManagement = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Institutional Header</label>
+                                    <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Main Heading</label>
                                     <input
                                         type="text"
                                         value={newSlide.title}
@@ -238,7 +238,7 @@ const WebsiteManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Academic Focus (Styled Title)</label>
+                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Sub-heading (Highlighted)</label>
                                 <input
                                     type="text"
                                     value={newSlide.styledtitle}
@@ -250,12 +250,12 @@ const WebsiteManagement = () => {
                             </div>
 
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Brief Narrative Dissemination</label>
+                                <label className="block text-[10px] font-black text-slate-400 mb-2 uppercase tracking-[0.2em] italic font-win">Short Description</label>
                                 <textarea
                                     value={newSlide.desc}
                                     onChange={e => setNewSlide({ ...newSlide, desc: e.target.value })}
                                     className="w-full px-4 py-3 bg-[#f8fbff] border-2 border-[#d8e6f3] rounded-[4px] text-[13px] font-bold text-slate-700 placeholder:text-slate-300 focus:border-blue-400 focus:outline-none focus:bg-white transition-all shadow-inner h-24 resize-none leading-relaxed"
-                                    placeholder="Enter institutional narrative..."
+                                    placeholder="Tell the story..."
                                     required
                                 />
                             </div>
@@ -267,9 +267,9 @@ const WebsiteManagement = () => {
                             className="w-full py-4 bg-gradient-to-b from-blue-500 to-blue-700 text-white border-2 border-blue-800 shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_10px_20px_rgba(0,0,0,0.1)] hover:brightness-110 active:scale-95 transition-all rounded-[4px] text-[12px] font-black uppercase tracking-[0.3em] flex items-center justify-center gap-3"
                         >
                             {saving ? (
-                                <><Loader2 size={18} className="animate-spin" /> SYNCING CORE...</>
+                                <><Loader2 size={18} className="animate-spin" /> SAVING...</>
                             ) : (
-                                <><Save size={18} /> INITIALIZE SEQUENCE</>
+                                <><Save size={18} /> ADD SLIDE TO WEBSITE</>
                             )}
                         </button>
                     </form>
@@ -279,7 +279,7 @@ const WebsiteManagement = () => {
                 <div className="space-y-6">
                     <div className="flex items-center justify-between px-2">
                         <h2 className="text-[12px] font-black text-[#003399] uppercase tracking-[0.3em] flex items-center gap-3">
-                            <ImageIcon size={18} strokeWidth={3} /> ACTIVE WORKSTATION SLIDES 
+                            <ImageIcon size={18} strokeWidth={3} /> CURRENT LIVE SLIDES 
                             <span className="bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full text-[10px] font-black">{slides.length}</span>
                         </h2>
                     </div>
@@ -290,9 +290,9 @@ const WebsiteManagement = () => {
                                 <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center mb-6 border-2 border-blue-100">
                                     <AlertCircle size={32} className="text-blue-300" />
                                 </div>
-                                <h3 className="text-[14px] font-black text-slate-700 uppercase tracking-widest mb-2 font-win">Table Cleared</h3>
+                                <h3 className="text-[14px] font-black text-slate-700 uppercase tracking-widest mb-2 font-win">No Custom Slides</h3>
                                 <p className="text-slate-400 text-[11px] font-bold uppercase tracking-widest leading-relaxed max-w-[240px]">
-                                    No custom sequences detected. Institutional defaults are currently operational.
+                                    You haven't added any custom slides. The school's default images are currently showing.
                                 </p>
                             </div>
                         ) : (
@@ -343,7 +343,7 @@ const WebsiteManagement = () => {
                         <div className="flex items-center gap-3 p-4 bg-emerald-50 border-2 border-emerald-100 rounded-[6px]">
                             <CheckCircle size={18} className="text-emerald-500 shrink-0" />
                             <p className="text-[10px] font-black text-emerald-700 uppercase tracking-widest font-win italic">
-                                Custom sequences active. Defaults bypassed.
+                                Your custom slides are now live on the website.
                             </p>
                         </div>
                     )}
