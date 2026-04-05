@@ -83,10 +83,10 @@ const IntroStep = ({ nextStep, t }) => (
         </div>
         <div className="max-w-2xl mx-auto">
             <span className="label-meta mb-4 block text-primary font-semibold tracking-wider">Admissions</span>
-            <h2 className="text-5xl md:text-6xl font-bold text-dark mb-6">
+            <h2 className="text-3xl md:text-6xl font-bold text-dark mb-6">
                 Online <span className="text-primary">Application.</span>
             </h2>
-            <p className="text-lg text-dark/60 leading-relaxed mb-16 max-w-xl mx-auto">
+            <p className="text-base md:text-lg text-dark/60 leading-relaxed mb-16 max-w-xl mx-auto">
                 {t.apply_subtitle}
             </p>
         </div>
@@ -939,7 +939,7 @@ const SupportStep = ({ formData, updateFormData, t }) => (
 const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, handleSubmit, prevStep, t }) => {
     if (referenceNumber) {
         return (
-            <div className="relative isolate py-4 overflow-hidden -mx-8 md:-mx-16 px-8 md:px-16">
+            <div className="relative isolate py-4 overflow-hidden -mx-4 md:-mx-16 px-4 md:px-16">
                 {/* Visual Accent Background Elements */}
                 <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(var(--primary-rgb),0.05),transparent_70%)] pointer-events-none" />
                 <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48 opacity-60" />
@@ -947,8 +947,8 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                 <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
                     <div className="text-center space-y-8 relative">
                         <div className="mb-12 relative inline-block">
-                            <div className="w-28 h-28 bg-primary rounded-[2rem] flex items-center justify-center mx-auto shadow-[0_20px_50px_-15px_rgba(var(--primary-rgb),0.5)] transform rotate-12 hover:rotate-0 transition-all duration-700 relative z-10">
-                                <CheckCircle2 size={48} className="text-white" />
+                            <div className="w-20 h-20 md:w-28 md:h-28 bg-primary rounded-[1.5rem] md:rounded-[2rem] flex items-center justify-center mx-auto shadow-[0_20px_50px_-15px_rgba(var(--primary-rgb),0.5)] transform rotate-12 hover:rotate-0 transition-all duration-700 relative z-10">
+                                <CheckCircle2 className="w-8 h-8 md:w-12 md:h-12 text-white" />
                             </div>
                             <div className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400/20 rounded-full blur-xl animate-pulse" />
                             <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-primary/10 rounded-full blur-2xl animate-pulse delay-700" />
@@ -959,10 +959,10 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                                 <Sparkles size={14} className="text-primary animate-pulse" />
                                 <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">{t.status_submitted || "Application Securely Sent"}</span>
                             </div>
-                            <h2 className="text-5xl md:text-7xl font-win leading-tight tracking-[-0.03em] text-slate-900">
+                            <h2 className="text-3xl md:text-7xl font-serif leading-tight tracking-[-0.03em] text-slate-900">
                                 {t.submission_received}
                             </h2>
-                            <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
+                            <p className="text-base md:text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
                                 {t.success_msg}
                             </p>
                         </div>
@@ -980,10 +980,10 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                                             {t.ref_number || "Filing Reference"}
                                         </label>
                                         <div className="flex flex-col gap-4">
-                                            <div className="text-5xl md:text-6xl font-mono font-black text-slate-900 tracking-tighter selection:bg-primary selection:text-white">
+                                            <div className="text-4xl md:text-6xl font-mono font-black text-slate-900 tracking-tighter selection:bg-primary selection:text-white break-all">
                                                 {referenceNumber}
                                             </div>
-                                            <div className="flex gap-4">
+                                            <div className="flex flex-wrap gap-4">
                                                 <button
                                                     onClick={() => {
                                                         navigator.clipboard.writeText(referenceNumber);
@@ -1445,35 +1445,36 @@ const Apply = () => {
                 />
             )}
 
-            <section className={`section-padding ${currentStep !== 0 ? 'pt-48' : ''}`}>
+            <section className={`py-12 md:py-32 ${currentStep !== 0 ? 'pt-40 md:pt-56' : 'pt-12 md:pt-40'}`}>
                 <div className="container-wide max-w-5xl mx-auto">
 
                     {/* Stepper Progress */}
                     {currentStep > 1 && currentStep < 9 && !referenceNumber && (
-                        <div className="mb-32">
-                            <div className="flex justify-between items-center relative">
-                                <div className="absolute top-1/2 left-0 w-full h-[1px] bg-slate-200 -translate-y-1/2" />
-                                <div
-                                    className="absolute top-1/2 left-0 h-[1px] bg-primary -translate-y-1/2 transition-all duration-1000"
-                                    style={{ width: `${((currentStep - 2) / (STEPS.slice(2, -1).length - 1)) * 100}%` }}
-                                />
-
-                                {STEPS.slice(2, -1).map((step, idx) => {
-                                    const realIdx = idx + 2;
-                                    const isActive = currentStep === realIdx;
-                                    const isCompleted = currentStep > realIdx;
-
-                                    return (
-                                        <div key={step.id} className="relative z-10 flex flex-col items-center">
-                                            <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-700 bg-white border-2 ${isActive ? 'border-primary' : isCompleted ? 'bg-primary border-primary' : 'border-slate-200'}`}>
-                                                {isCompleted ? <CheckCircle2 size={16} className="text-white" /> : <span className={`text-[10px] font-bold ${isActive ? 'text-primary' : 'text-dark/20'}`}>0{idx + 1}</span>}
+                        <div className="mb-12 md:mb-20">
+                            <div className="flex items-center gap-1.5 md:gap-3 overflow-x-auto no-scrollbar scroll-smooth pb-4 px-2 -mx-2">
+                                {STEPS.map((step, idx) => (
+                                    <div key={step.id} className="flex items-center shrink-0">
+                                        <div 
+                                            onClick={() => {
+                                                if (idx < currentStep) setCurrentStep(idx);
+                                            }}
+                                            className={`w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center transition-all duration-700 cursor-pointer ${
+                                                currentStep === idx 
+                                                    ? 'bg-primary text-white scale-110 shadow-lg' 
+                                                    : idx < currentStep 
+                                                    ? 'bg-primary/20 text-primary border border-primary/20' 
+                                                    : 'bg-slate-100 text-slate-400 opacity-40'
+                                            }`}
+                                        >
+                                            <div className="scale-75 md:scale-100">
+                                                {step.icon}
                                             </div>
-                                            <p className={`absolute -bottom-8 whitespace-nowrap text-[9px] font-bold uppercase tracking-[0.3em] ${isActive ? 'text-primary' : 'text-dark/20'}`}>
-                                                {step.title}
-                                            </p>
                                         </div>
-                                    );
-                                })}
+                                        {idx < STEPS.length - 1 && (
+                                            <div className={`w-3 md:w-8 h-[1px] mx-1 md:mx-2 transition-colors duration-1000 ${idx < currentStep ? 'bg-primary' : 'bg-slate-100'}`} />
+                                        )}
+                                    </div>
+                                ))}
                             </div>
                         </div>
                     )}
