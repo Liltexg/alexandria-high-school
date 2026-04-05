@@ -939,120 +939,172 @@ const SupportStep = ({ formData, updateFormData, t }) => (
 const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, handleSubmit, prevStep, t }) => {
     if (referenceNumber) {
         return (
-            <div className="space-y-16 animate-in fade-in slide-in-from-bottom-8 duration-1000">
-                <div className="text-center py-8">
-                    <div className="w-20 h-20 bg-emerald-50 text-emerald-500 rounded-full flex items-center justify-center mx-auto mb-10 shadow-lg shadow-emerald-500/10">
-                        <CheckCircle2 size={40} />
-                    </div>
-                    <h2 className="text-5xl font-bold text-dark mb-4">{t.thank_you}</h2>
-                    <p className="text-lg text-dark/50 max-w-lg mx-auto leading-relaxed">
-                        {t.received_msg}
-                    </p>
-                </div>
-
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 bg-white border border-slate-200 rounded-[2rem] p-12 shadow-sm">
-                    <div className="space-y-12">
-                        <div className="space-y-4">
-                            <span className="text-sm font-medium text-dark/40 uppercase tracking-[0.2em]">{t.ref_number}</span>
-                            <div className="p-8 bg-slate-50 border-2 border-dashed border-slate-200 rounded-2xl flex items-center justify-between group">
-                                <span className="text-4xl font-mono font-bold text-primary tracking-wider">{referenceNumber}</span>
-                                <button
-                                    onClick={() => navigator.clipboard.writeText(referenceNumber)}
-                                    className="p-3 hover:bg-white rounded-lg transition-all text-dark/30 hover:text-primary"
-                                >
-                                    <Sparkles size={20} />
-                                </button>
+            <div className="relative isolate py-4 overflow-hidden -mx-8 md:-mx-16 px-8 md:px-16">
+                {/* Visual Accent Background Elements */}
+                <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_right,rgba(var(--primary-rgb),0.05),transparent_70%)] pointer-events-none" />
+                <div className="absolute top-0 right-0 -z-10 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[100px] -mr-48 -mt-48 opacity-60" />
+                
+                <div className="max-w-4xl mx-auto space-y-16 animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
+                    <div className="text-center space-y-8 relative">
+                        <div className="mb-12 relative inline-block">
+                            <div className="w-28 h-28 bg-primary rounded-[2rem] flex items-center justify-center mx-auto shadow-[0_20px_50px_-15px_rgba(var(--primary-rgb),0.5)] transform rotate-12 hover:rotate-0 transition-all duration-700 relative z-10">
+                                <CheckCircle2 size={48} className="text-white" />
                             </div>
+                            <div className="absolute -top-4 -right-4 w-12 h-12 bg-yellow-400/20 rounded-full blur-xl animate-pulse" />
+                            <div className="absolute -bottom-4 -left-4 w-16 h-16 bg-primary/10 rounded-full blur-2xl animate-pulse delay-700" />
                         </div>
 
-                        <div className="space-y-6">
-                            <h3 className="text-lg font-bold flex items-center gap-3 text-dark">
-                                <Upload size={20} className="text-primary" />
-                                {t.supporting_docs}
-                            </h3>
-                            <p className="text-sm text-dark/60 leading-relaxed">
-                                {t.email_docs_msg}
+                        <div className="space-y-4">
+                            <div className="inline-flex items-center gap-2 px-4 py-2 bg-primary/5 border border-primary/10 rounded-full mb-4">
+                                <Sparkles size={14} className="text-primary animate-pulse" />
+                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em]">{t.status_submitted || "Application Securely Sent"}</span>
+                            </div>
+                            <h2 className="text-5xl md:text-7xl font-win leading-tight tracking-[-0.03em] text-slate-900">
+                                {t.submission_received}
+                            </h2>
+                            <p className="text-lg text-slate-500 max-w-2xl mx-auto leading-relaxed font-medium">
+                                {t.success_msg}
                             </p>
                         </div>
                     </div>
 
-                    <div className="space-y-12">
-                        <div className="p-10 bg-slate-900 text-white rounded-2xl relative overflow-hidden group">
-                            <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/40 transition-all duration-1000" />
-                            <h4 className="text-sm font-bold uppercase tracking-[0.3em] mb-10 text-primary">{t.checklist}</h4>
-                            <ul className="space-y-6">
-                                {(t.apply_form.checklist_items || t.checklist_items || [
-                                    "1. Birth Certificate / Geboortesertifikaat",
-                                    "2. Progress report from previous school",
-                                    "3. Immunisation record / Inentingsertifikaat",
-                                    "4. Proof of Address / Bewys van Adres",
-                                    "5. ID Copies of Parents/Guardians",
-                                    "6. If Guardian (Court Documents)",
-                                    "7. Provisional Transfer letter"
-                                ]).map((item, idx) => (
-                                    <li key={idx} className="flex items-center gap-3">
-                                        <div className="w-1.5 h-1.5 bg-primary rounded-full" />
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
+                    {/* High-Fidelity Reference Card */}
+                    <div className="relative group">
+                        <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-[2.5rem] blur-2xl group-hover:scale-105 transition-transform duration-700 opacity-50" />
+                        <div className="relative bg-white border border-slate-200/60 rounded-[2.5rem] overflow-hidden shadow-[0_30px_70px_-20px_rgba(0,0,0,0.06)]">
+                            <div className="grid grid-cols-1 lg:grid-cols-2">
+                                <div className="p-12 md:p-16 space-y-10">
+                                    <div className="space-y-4">
+                                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em] flex items-center gap-3">
+                                            <ShieldCheck size={14} className="text-primary" />
+                                            {t.ref_number || "Filing Reference"}
+                                        </label>
+                                        <div className="flex flex-col gap-4">
+                                            <div className="text-5xl md:text-6xl font-mono font-black text-slate-900 tracking-tighter selection:bg-primary selection:text-white">
+                                                {referenceNumber}
+                                            </div>
+                                            <div className="flex gap-4">
+                                                <button
+                                                    onClick={() => {
+                                                        navigator.clipboard.writeText(referenceNumber);
+                                                    }}
+                                                    className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-primary hover:text-primary/70 transition-colors"
+                                                >
+                                                    <Sparkles size={14} /> {t.apply_form.copy_ref || "Copy Reference"}
+                                                </button>
+                                                <div className="h-4 w-[1px] bg-slate-200" />
+                                                <span className="text-[10px] font-black uppercase tracking-widest text-slate-400">Official System Record</span>
+                                            </div>
+                                        </div>
+                                    </div>
 
-                        <div className="space-y-6">
-                            <div className="p-8 border border-slate-200 rounded-xl space-y-3 bg-white">
-                                <span className="text-sm font-medium text-dark/50 block">{t.apply_form.email_docs_to}</span>
-                                <a href="mailto:alexandriahigh6185@gmail.com" className="text-lg font-semibold text-primary hover:text-primary/80 transition-colors">
-                                    alexandriahigh6185@gmail.com
-                                </a>
-                            </div>
-                            <div className="p-8 border border-slate-200 rounded-xl space-y-3 bg-white">
-                                <span className="text-sm font-medium text-dark/50 block">{t.important_note}</span>
-                                <div className="flex items-center justify-between">
-                                    <p className="text-sm font-medium text-dark">{t.use_ref_msg}</p>
-                                    <button
-                                        onClick={() => navigator.clipboard.writeText(referenceNumber)}
-                                        className="text-xs font-semibold text-primary uppercase tracking-wide hover:text-primary/80"
-                                    >
-                                        {t.apply_form.copy_ref}
-                                    </button>
+                                    <div className="space-y-6 pt-10 border-t border-slate-100">
+                                        <div className="flex items-start gap-4">
+                                            <div className="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-primary shrink-0">
+                                                <Upload size={18} />
+                                            </div>
+                                            <div className="space-y-2">
+                                                <h4 className="text-sm font-bold text-slate-900">{t.supporting_docs || "Document Submission"}</h4>
+                                                <p className="text-sm text-slate-500 leading-relaxed max-w-xs">{t.email_docs_msg}</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-6 bg-slate-50/80 rounded-2xl border border-slate-100 flex items-center gap-4 group/email">
+                                            <div className="w-10 h-10 rounded-full bg-white shadow-sm flex items-center justify-center text-primary">
+                                                <GlobeIcon size={16} />
+                                            </div>
+                                            <div className="flex flex-col">
+                                                <span className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-1">{t.apply_form.email_docs_to || "Direct Channels"}</span>
+                                                <a href="mailto:alexandriahigh6185@gmail.com" className="text-sm font-bold text-slate-900 hover:text-primary transition-colors hover:underline underline-offset-4">
+                                                    alexandriahigh6185@gmail.com
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="bg-slate-900 p-12 md:p-16 relative overflow-hidden flex flex-col justify-between">
+                                    {/* Decorative Patterns */}
+                                    <div className="absolute inset-0 opacity-10 pointer-events-none">
+                                        <div className="absolute top-0 right-0 w-64 h-64 border-4 border-white/20 rounded-full -mr-32 -mt-32" />
+                                        <div className="absolute bottom-0 left-0 w-48 h-48 border border-white/10 rounded-full -ml-24 -mb-24" />
+                                    </div>
+
+                                    <div className="relative z-10 space-y-12">
+                                        <div className="space-y-1">
+                                            <h4 className="text-xs font-black uppercase tracking-[0.4em] text-primary">{t.checklist || "NEXT PROTOCOLS"}</h4>
+                                            <p className="text-xs text-white/40 uppercase tracking-[0.2em]">{t.important_note || "ACTION REQUIRED"}</p>
+                                        </div>
+
+                                        <ul className="space-y-6">
+                                            {(t.apply_form.checklist_items || t.checklist_items || [
+                                                "Birth Certificate / Geboortesertifikaat",
+                                                "Progress report from previous school",
+                                                "Immunisation record / Inentingsertifikaat",
+                                                "Proof of Address / Bewys van Adres",
+                                                "ID Copies of Parents/Guardians",
+                                                "If Guardian (Court Documents)",
+                                                "Provisional Transfer letter"
+                                            ]).map((item, idx) => (
+                                                <li key={idx} className="flex items-start gap-4 animate-in fade-in slide-in-from-right-4 duration-700 fill-mode-both" style={{ animationDelay: `${idx * 100}ms` }}>
+                                                    <div className="w-5 h-5 rounded-md bg-primary/20 border border-primary/30 flex items-center justify-center shrink-0 mt-0.5">
+                                                        <CheckCircle2 size={10} className="text-primary" />
+                                                    </div>
+                                                    <span className="text-xs font-medium text-white/80 leading-relaxed">{item}</span>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+
+                                    <div className="relative z-10 pt-12 border-t border-white/5">
+                                        <p className="text-[10px] text-white/30 leading-relaxed italic">
+                                            {t.contact_school_msg || "Please keep your reference number secure for all future correspondence."}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="p-6 rounded-xl border border-blue-100 bg-blue-50">
-                        <p className="text-sm text-blue-900 leading-relaxed">
-                            <strong className="font-semibold block mb-1">{t.please_note}</strong>
-                            {t.contact_school_msg}
-                        </p>
-                    </div>
-                </div>
+                    {/* Action Hub */}
+                    <div className="pt-8 flex flex-col items-center gap-12">
+                        <div className="flex flex-col md:flex-row gap-6 w-full max-w-2xl">
+                            <button
+                                onClick={() => generateApplicationPDF(formData, referenceNumber)}
+                                className="group relative bg-white border border-slate-200 text-slate-900 hover:border-primary transition-all duration-500 rounded-[1.5rem] p-6 flex flex-1 flex-col items-center gap-4 text-center hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.05)]"
+                            >
+                                <div className="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center text-slate-400 group-hover:bg-primary/5 group-hover:text-primary transition-all duration-500">
+                                    <Download size={24} />
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-slate-400 group-hover:text-primary transition-all">{t.export || "Documents"}</span>
+                                    <p className="text-sm font-bold">{t.download_copy || "Secure PDF Export"}</p>
+                                </div>
+                            </button>
 
-                <div className="flex flex-col items-center gap-6 pt-8">
-                    {formData.parent_signature && (
-                        <div className="w-full max-w-sm mb-4">
-                            <span className="block text-xs font-bold text-dark/40 uppercase mb-2 text-center">Signature Preview:</span>
-                            <img src={formData.parent_signature} alt="Captured Signature" className="bg-white border border-slate-300 rounded shadow-sm mx-auto h-16 object-contain" />
+                            <button
+                                onClick={() => {
+                                    sessionStorage.removeItem('apply_form_data');
+                                    sessionStorage.removeItem('apply_current_step');
+                                    window.location.href = '/';
+                                }}
+                                className="group relative bg-slate-900 text-white transition-all duration-500 rounded-[1.5rem] p-6 flex flex-1 flex-col items-center gap-4 text-center hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.3)] hover:-translate-y-1"
+                            >
+                                <div className="w-14 h-14 bg-white/5 rounded-2xl flex items-center justify-center text-white/40 group-hover:text-primary transition-all duration-500">
+                                    <ArrowRight size={24} />
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] font-black uppercase tracking-widest text-white/30 group-hover:text-primary transition-all">{t.navigation || "Finish"}</span>
+                                    <p className="text-sm font-bold">{t.return_home || "Return to Portal"}</p>
+                                </div>
+                            </button>
                         </div>
-                    )}
-                    <p className="text-sm text-dark/50">{t.expect_msg}</p>
-                    <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-lg">
-                        <button
-                            onClick={() => generateApplicationPDF(formData, referenceNumber)}
-                            className="bg-primary text-white hover:bg-primary/90 font-medium rounded-full py-3 px-8 transition-all flex items-center justify-center gap-2 group flex-1"
-                        >
-                            <Download size={16} className="group-hover:translate-y-1 transition-transform" /> {t.download_copy}
-                        </button>
-                        <button
-                            onClick={() => {
-                                sessionStorage.removeItem('apply_form_data');
-                                sessionStorage.removeItem('apply_current_step');
-                                window.location.href = '/';
-                            }}
-                            className="bg-gray-100 text-dark hover:bg-gray-200 font-medium rounded-full py-3 px-8 transition-all flex items-center justify-center gap-2 group flex-1"
-                        >
-                            {t.return_home} <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                        </button>
+
+                        <div className="flex items-center gap-4 text-[10px] font-black text-slate-300 uppercase underline-offset-8">
+                            <div className="w-12 h-[1px] bg-slate-200" />
+                            <span>Authorized Institutional System</span>
+                            <div className="w-12 h-[1px] bg-slate-200" />
+                        </div>
                     </div>
                 </div>
             </div>
