@@ -150,6 +150,7 @@ const Applications = () => {
             confirmText: 'Delete',
             cancelText: 'Cancel',
             onConfirm: async () => {
+                setDialog(prev => ({ ...prev, isOpen: false }));
                 try {
                     const { error } = await supabase
                         .from('applications')
@@ -177,24 +178,29 @@ const Applications = () => {
                     setSelectedApp(null);
                     fetchApplications();
 
-                    setDialog({
-                        isOpen: true,
-                        type: 'success',
-                        title: 'Success',
-                        message: 'Application deleted successfully',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    // Small delay to ensure the animations feel right
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'success',
+                            title: 'Success',
+                            message: 'Application deleted successfully',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 } catch (error) {
                     console.error('Error deleting application:', error);
-                    setDialog({
-                        isOpen: true,
-                        type: 'error',
-                        title: 'Error',
-                        message: 'Failed to delete application',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'error',
+                            title: 'Error',
+                            message: 'Failed to delete application',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 }
             }
         });

@@ -141,30 +141,35 @@ const Notices = () => {
             confirmText: 'Delete',
             cancelText: 'Cancel',
             onConfirm: async () => {
+                setDialog(prev => ({ ...prev, isOpen: false }));
                 const { error } = await supabase
                     .from('notices')
                     .delete()
                     .eq('id', id);
 
                 if (error) {
-                    setDialog({
-                        isOpen: true,
-                        type: 'error',
-                        title: 'System Error',
-                        message: 'Failed to eliminate notice record.',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'error',
+                            title: 'System Error',
+                            message: 'Failed to eliminate notice record.',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 } else {
                     fetchNotices();
-                    setDialog({
-                        isOpen: true,
-                        type: 'success',
-                        title: 'Record Eliminated',
-                        message: 'The notice has been purged from the database.',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'success',
+                            title: 'Record Eliminated',
+                            message: 'The notice has been purged from the database.',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 }
             }
         });

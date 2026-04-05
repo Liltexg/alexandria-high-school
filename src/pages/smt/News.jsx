@@ -79,6 +79,7 @@ const News = () => {
             confirmText: 'Delete',
             cancelText: 'Cancel',
             onConfirm: async () => {
+                setDialog(prev => ({ ...prev, isOpen: false }));
                 const { error } = await supabase
                     .from('news')
                     .delete()
@@ -86,24 +87,28 @@ const News = () => {
 
                 if (error) {
                     console.error('Error deleting article:', error);
-                    setDialog({
-                        isOpen: true,
-                        type: 'error',
-                        title: 'Selection Error',
-                        message: 'Failed to delete record. Please check your system permissions.',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'error',
+                            title: 'Selection Error',
+                            message: 'Failed to delete record. Please check your system permissions.',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 } else {
                     fetchNews();
-                    setDialog({
-                        isOpen: true,
-                        type: 'success',
-                        title: 'Record Eliminated',
-                        message: 'The article has been permanently removed from the mainframe.',
-                        confirmText: 'OK',
-                        onConfirm: null
-                    });
+                    setTimeout(() => {
+                        setDialog({
+                            isOpen: true,
+                            type: 'success',
+                            title: 'Record Eliminated',
+                            message: 'The article has been permanently removed from the mainframe.',
+                            confirmText: 'OK',
+                            onConfirm: null
+                        });
+                    }, 300);
                 }
             }
         });
