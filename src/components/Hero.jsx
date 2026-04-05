@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -37,11 +37,12 @@ const Hero = () => {
         }
     ];
 
-    const [slides, setSlides] = useState(defaultSlides);
-
-    useEffect(() => {
-        setSlides(defaultSlides);
-    }, [lang]); // Re-sync slides when language changes
+    const [customSlides, setCustomSlides] = useState([]);
+    
+    // Institutional Intelligence: All Active Slides (Defaults + Custom Office Posts)
+    const allSlides = useMemo(() => {
+        return [...defaultSlides, ...customSlides];
+    }, [defaultSlides, customSlides]);
 
     useEffect(() => {
         const fetchSlides = async () => {
@@ -51,16 +52,25 @@ const Hero = () => {
                     .select('*')
                     .order('created_at', { ascending: true });
 
-                if (!error && data && data.length > 0) {
-                    // Note: This logic assumes the database has localized content or we prefer DB over defaults
-                    // For now, we prefer DB if available, but be aware of i18n implications
-                    setSlides(data);
+                if (!error && data) {
+                    setCustomSlides(data);
                 }
             } catch (err) {
                 console.error("Failed to fetch dynamic slides:", err);
             }
         };
+
         fetchSlides();
+
+        // Live Reflection Protocol: Real-time Sync
+        const channel = supabase
+            .channel('public-hero-sync')
+            .on('postgres_changes', { event: '*', schema: 'public', table: 'hero_slides' }, () => {
+                fetchSlides();
+            })
+            .subscribe();
+
+        return () => supabase.removeChannel(channel);
     }, []);
 
     useEffect(() => {
@@ -70,10 +80,10 @@ const Hero = () => {
 
     useEffect(() => {
         const timer = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % slides.length);
+            setCurrentSlide((prev) => (prev + 1) % allSlides.length);
         }, 12000);
         return () => clearInterval(timer);
-    }, [slides.length]);
+    }, [allSlides.length]);
 
     // Cinematic Animation Variants
     const letterVariants = {
@@ -114,7 +124,7 @@ const Hero = () => {
                     className="absolute inset-0"
                 >
                     <img
-                        src={slides[currentSlide].image}
+                        src={allSlides[currentSlide]?.image}
                         alt="Hero"
                         className="w-full h-full object-cover grayscale-[0.3]"
                     />
@@ -148,7 +158,7 @@ const Hero = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     className="text-[8px] md:text-[11px] font-black uppercase tracking-[0.3em] md:tracking-[0.6em] text-accent/70"
                                 >
-                                    {slides[currentSlide].tag}
+                                    {allSlides[currentSlide]?.tag}
                                 </motion.span>
                             </motion.div>
 
@@ -159,7 +169,7 @@ const Hero = () => {
                                     transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.5 }}
                                     className="block"
                                 >
-                                    {slides[currentSlide].title}
+                                    {allSlides[currentSlide]?.title || allSlides[currentSlide]?.main_title}
                                 </motion.span>
                                 <motion.span
                                     initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
@@ -167,7 +177,7 @@ const Hero = () => {
                                     transition={{ duration: 1.5, ease: [0.19, 1, 0.22, 1], delay: 0.7 }}
                                     className="text-serif italic text-white/90 block"
                                 >
-                                    {slides[currentSlide].styledtitle}
+                                    {allSlides[currentSlide]?.styledtitle || allSlides[currentSlide]?.styled_title}
                                 </motion.span>
                             </h1>
 
@@ -178,7 +188,7 @@ const Hero = () => {
                                     transition={{ delay: 1, duration: 1.5 }}
                                     className="max-w-md text-white/40 text-xs sm:text-sm md:text-lg lg:text-2xl font-light leading-relaxed gpu"
                                 >
-                                    {slides[currentSlide].desc}
+                                    {allSlides[currentSlide]?.desc || allSlides[currentSlide]?.description}
                                 </motion.p>
                                 <motion.div
                                     initial={{ opacity: 0, x: -20 }}
@@ -211,19 +221,19 @@ const Hero = () => {
                                 transition={{ duration: 12, ease: "linear" }}
                             />
                         </div>
-                        <span className="text-[11px] font-black text-white/20 tracking-[0.5em]">0{slides.length}</span>
+                        <span className="text-[11px] font-black text-white/20 tracking-[0.5em]">0{allSlides.length}</span>
                     </div>
 
                     <div className="flex gap-2 md:gap-4">
                         <button
-                            onClick={() => setCurrentSlide(prev => (prev - 1 + slides.length) % slides.length)}
+                            onClick={() => setCurrentSlide(prev => (prev - 1 + allSlides.length) % allSlides.length)}
                             className="w-12 h-12 md:w-16 md:h-16 border border-white/5 text-white/40 flex items-center justify-center hover:bg-white hover:text-dark transition-all duration-1000 group touch-manipulation"
                             aria-label="Previous slide"
                         >
                             <ChevronLeft size={20} className="group-active:scale-90" />
                         </button>
                         <button
-                            onClick={() => setCurrentSlide(prev => (prev + 1) % slides.length)}
+                            onClick={() => setCurrentSlide(prev => (prev + 1) % allSlides.length)}
                             className="w-12 h-12 md:w-16 md:h-16 border border-white/5 text-white/40 flex items-center justify-center hover:bg-white hover:text-dark transition-all duration-1000 group touch-manipulation"
                             aria-label="Next slide"
                         >

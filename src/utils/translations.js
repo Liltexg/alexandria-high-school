@@ -54,6 +54,7 @@ export const translations = {
             apply: "Apply",
             admissions: "Admissions",
             contact: "Contact Us",
+            sports_culture: "Sports & Culture",
             established_abbr: "Established 1960",
             en: "ENGLISH",
             af: "AFRIKAANS"
@@ -67,7 +68,7 @@ export const translations = {
             button: "Join Our School",
             dignity_first: "Dignity First.",
             card_desc: "Providing quality education and building strong character for learners in the Eastern Cape.",
-            founded: "Founded 1892"
+            founded: "Founded 1960"
         },
         achievements: [
             "No-Fee Academic Excellence",
@@ -118,7 +119,7 @@ export const translations = {
             calendar: "Master Calendar",
             admissions_portal: "Admissions Portal",
             social_ecosystem: "Social Ecosystem",
-            smt_portal: "SMT Portal",
+            smt_portal: "Apex OS",
             heritage: "Heritage Archive",
             registry: "Official Registry",
             liaison: "Liaison",
@@ -133,7 +134,7 @@ export const translations = {
         },
         admissions: {
             title: "Admissions",
-            subtitle: "We are committed to providing high-quality, accessible public education to the Alexandria community.",
+            subtitle: "Open doors. Quality education. For every learner in our community.",
             our_approach: "Our Approach",
             quality_education: "Quality Education <br /> <span class='text-primary'>For All.</span>",
             approach_desc: "Alexandria High School follows the official admission policies of the Eastern Cape Department of Education, making sure every learner in our community has a fair chance to join us.",
@@ -191,16 +192,16 @@ export const translations = {
             chronicles: "CHRONICLES",
             default_updates: [
                 {
-                    tag: "Leadership",
-                    title: "RCL Prefect Camp 2026: The Strategic Governance Retreat",
-                    desc: "Our student leadership undergoes intensive structural preparation for the upcoming academic cycle.",
-                    date: "12 FEB 2026"
+                    tag: "Institutional",
+                    title: "Celebrating the Leadership of Mrs Eleanor Taai",
+                    desc: "On 26 March 2026, we honored our beloved Principal for her dedicated service and wisdom.",
+                    date: "26 MAR 2026"
                 },
                 {
-                    tag: "High School",
-                    title: "Foundation Phase ICT Laboratory Commissioning",
-                    desc: "Expanding our digital ecosystem with state-of-the-art infrastructure for primary literacy.",
-                    date: "08 FEB 2026"
+                    tag: "Leadership",
+                    title: "RCL Prefect Camp 2026: Strategic Retreat",
+                    desc: "Our student leadership undergoes intensive preparation for the upcoming academic cycle.",
+                    date: "12 FEB 2026"
                 }
             ]
         },
@@ -229,9 +230,9 @@ export const translations = {
             }
         },
         academic_paths: {
-            tag: "The Academic Journey",
-            title: "Our <br /> <span class='text-serif italic text-primary/80'>Schools.</span>",
-            school_label: "School",
+            tag: "The Academic Phase",
+            title: "Academic <br /> <span class='text-serif italic text-primary/80'>Journey.</span>",
+            school_label: "Level",
             desc: "Supporting every learner from their first day of school to their final matric exam.",
             learn_more: "Learn More",
             background_text: "LEARNING",
@@ -413,6 +414,7 @@ export const translations = {
             apply: "Doen Aansoek",
             admissions: "Toelatings",
             contact: "Kontak Ons",
+            sports_culture: "Sport & Kultuur",
             established_abbr: "Gestig 1960",
             en: "ENGELS",
             af: "AFRIKAANS"
@@ -426,7 +428,7 @@ export const translations = {
             button: "Sluit By Ons Aan",
             dignity_first: "Waardigheid Eerste.",
             card_desc: "Verskaffing van gehalte-onderwys en die bou van sterk karakter vir leerders in die Oos-Kaap.",
-            founded: "Gestig 1892"
+            founded: "Gestig 1960"
         },
         achievements: [
             "Gratis Akademiese Uitnemendheid",
@@ -477,7 +479,7 @@ export const translations = {
             calendar: "Meesterkalender",
             admissions_portal: "Toelatingsportaal",
             social_ecosystem: "Sosiale Ekosisteem",
-            smt_portal: "SMT-portaal",
+            smt_portal: "Apex OS",
             heritage: "Erfenisargief",
             registry: "Amptelike Register",
             liaison: "Skakeling",
@@ -492,7 +494,7 @@ export const translations = {
         },
         admissions: {
             title: "Toelatings",
-            subtitle: "Ons is daartoe verbind om hoë gehalte, toeganklike openbare onderwys aan die Alexandria-gemeenskap te verskaf.",
+            subtitle: "Oop deure. Gehalte-onderwys. Vir elke leerder in ons gemeenskap.",
             our_approach: "Ons Benadering",
             quality_education: "Gehalte Onderwys <br /> <span class='text-primary'>Vir Almal.</span>",
             approach_desc: "Hoërskool Alexandria volg die amptelike toelatingsbeleid van die Oos-Kaapse Departement van Onderwys, om te verseker dat elke leerder in ons gemeenskap 'n regverdige kans het om by ons aan te sluit.",
@@ -550,16 +552,16 @@ export const translations = {
             chronicles: "KRONIEKE",
             default_updates: [
                 {
-                    tag: "Leierskap",
-                    title: "VRL Prefekekamp 2026: Die Strategiese Bestuurskamp",
-                    desc: "Ons studenteleierskap ondergaan intensiewe strukturele voorbereiding vir die komende akademiese siklus.",
-                    date: "12 FEB 2026"
+                    tag: "Institusioneel",
+                    title: "Viering van mev. Eleanor Taai se Leierskap",
+                    desc: "Op 26 Maart 2026 het ons ons geliefde Skoolhoof geëer vir haar toegewyde diens en wysheid.",
+                    date: "26 MRT 2026"
                 },
                 {
-                    tag: "Hoërskool",
-                    title: "Grondslagfase IKT-laboratorium Ingebruikneming",
-                    desc: "Uitbreiding van ons digitale ekosisteem met die nuutste infrastruktuur vir primêre geletterdheid.",
-                    date: "08 FEB 2026"
+                    tag: "Leierskap",
+                    title: "VRL Prefekekamp 2026: Strategiese Onttrekking",
+                    desc: "Ons studenteleierskap ondergaan intensiewe voorbereiding vir die komende akademiese siklus.",
+                    date: "12 FEB 2026"
                 }
             ]
         },
@@ -588,9 +590,9 @@ export const translations = {
             }
         },
         academic_paths: {
-            tag: "Die Akademiese Reis",
-            title: "Ons <br /> <span class='text-serif italic text-primary/80'>Skole.</span>",
-            school_label: "Skool",
+            tag: "Die Akademiese Fase",
+            title: "Akademiese <br /> <span class='text-serif italic text-primary/80'>Reis.</span>",
+            school_label: "Vlak",
             desc: "Ondersteun elke leerder van hul eerste skooldag tot hul finale matriekeksamen.",
             learn_more: "Leer Meer",
             background_text: "LEER",

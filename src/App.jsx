@@ -37,6 +37,8 @@ const SMTWebsite = React.lazy(() => import('./pages/smt/WebsiteManagement'));
 const PublicNotices = React.lazy(() => import('./pages/PublicNotices'));
 const PublicNews = React.lazy(() => import('./pages/PublicNews'));
 const Apply = React.lazy(() => import('./pages/Apply'));
+const TrackApplication = React.lazy(() => import('./pages/TrackApplication'));
+const SportsAndCulture = React.lazy(() => import('./pages/SportsAndCulture'));
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
@@ -84,17 +86,21 @@ const AppContents = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/calendar" element={<Calendar />} />
           <Route path="/staff" element={<Staff />} />
+          <Route path="/alumni" element={<Alumni />} />
 
           {/* Public Feature Routes */}
           <Route path="/notices" element={<PublicNotices />} />
           <Route path="/news" element={<PublicNews />} />
           <Route path="/apply" element={<Apply />} />
+          <Route path="/track-application" element={<TrackApplication />} />
+          <Route path="/sports-culture" element={<SportsAndCulture />} />
 
           {/* SMT Admin Routes */}
           <Route path="/smt/login" element={<SMTLogin />} />
           <Route path="/smt" element={<SMTLayout />}>
             <Route index element={<SMTDashboard />} />
             <Route path="notices" element={<SMTNotices />} />
+            <Route path="notice" element={<SMTNotices />} />
             <Route path="news" element={<SMTNews />} />
             <Route path="applications" element={<SMTApplications />} />
             <Route path="website" element={<SMTWebsite />} />

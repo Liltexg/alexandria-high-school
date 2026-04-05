@@ -22,6 +22,12 @@
   --space-unit: 8px;
   --radius-modern: 0.5rem;
   /* Shifting back to sharper, more architectural corners for "Authority" */
+
+  /* Windows 7 Aero Tokens */
+  --aero-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  --aero-border: 1px solid rgba(255, 255, 255, 0.4);
+  --aero-bg: rgba(220, 235, 255, 0.5);
+  --win7-blue: #004d99;
 }
 
 @layer base {
@@ -190,4 +196,71 @@
 
 .blur-optimize {
   will-change: filter;
+}
+
+/* Windows 7 / 98 Native Utilities */
+.aero-glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.win7-window {
+  @apply rounded-[6px] overflow-hidden border border-blue-900/50 shadow-[0_15px_40px_rgba(0,0,0,0.35)] bg-white;
+  outline: 1px solid rgba(255, 255, 255, 0.4);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3), inset 0 0 1px 1px rgba(255,255,255,0.2);
+}
+
+.win7-title-bar {
+  background: linear-gradient(to bottom, 
+    rgba(214, 232, 255, 0.9) 0%, 
+    rgba(171, 207, 255, 0.8) 50%, 
+    rgba(141, 189, 255, 0.7) 51%, 
+    rgba(168, 213, 255, 0.8) 100%
+  );
+  backdrop-filter: blur(10px);
+  @apply px-4 py-2 flex items-center justify-between border-b border-blue-800/30 shadow-[inset_0_1px_0_rgba(255,255,255,0.5)];
+}
+
+.win7-button {
+  background: linear-gradient(to bottom, #fcfcfc 0%, #f0f0f0 50%, #e5e5e5 51%, #f0f0f0 100%);
+  @apply border border-[#a0a0a0] rounded-[3px] px-4 py-1.5 text-slate-800 text-[12px] font-medium transition-all shadow-[inset_0_1px_0_white];
+}
+
+.win7-button:hover {
+  background: linear-gradient(to bottom, #eaf6ff 0%, #d8eaf9 50%, #cce4f7 51%, #eaf6ff 100%);
+  @apply border-[#0078d7] shadow-[0_0_5px_rgba(0,120,215,0.3)];
+}
+
+.win7-button:active {
+  background: linear-gradient(to bottom, #dae9f5 0%, #c0d3e5 100%);
+  @apply shadow-inner text-[#003399];
+}
+
+.win7-gadget {
+  @apply bg-white/90 backdrop-blur-md rounded-[4px] border border-[#a3c3e6] shadow-[0_2px_10px_rgba(31,38,135,0.1),inset_0_1px_0_rgba(255,255,255,1)] p-5 transition-all duration-300;
+  background-image: linear-gradient(to bottom, rgba(255,255,255,0.8), rgba(240,245,250,0.5));
+}
+
+.win7-gadget:hover {
+  @apply border-[#7cc4ff] shadow-[0_5px_15px_rgba(0,120,215,0.15),inset_0_1px_0_rgba(255,255,255,1)];
+}
+
+.win98-button {
+  @apply bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-700 border-r-gray-700 px-4 py-1 font-['MS_Sans_Serif',_sans-serif] text-[12px] active:border-t-gray-700 active:border-l-gray-700 active:border-b-white active:border-r-white;
+}
+
+.win98-window {
+  @apply bg-[#c0c0c0] border-2 border-t-white border-l-white border-b-gray-700 border-r-gray-700 p-1 flex flex-col;
+}
+
+.win98-title-bar {
+  @apply bg-gradient-to-r from-[#000080] to-[#1084d0] px-2 py-0.5 flex items-center justify-between text-white font-bold text-[11px];
+}
+
+/* SMT Font Fallbacks */
+.font-win {
+  font-family: 'Segoe UI', 'Tahoma', 'Geneva', 'Verdana', sans-serif;
 }

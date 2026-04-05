@@ -45,6 +45,18 @@ const NoticeForm = ({ notice = null, onSuccess, onCancel }) => {
             }
 
             if (error) throw error;
+
+            // Communication Protocol Audit
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                await supabase.from('audit_logs').insert([{
+                    actor_id: user?.id,
+                    action: notice?.id ? 'NOTICE_UPDATE' : 'NOTICE_PUBLISH',
+                    resource_type: 'NOTICE',
+                    details: { title: formData.title }
+                }]);
+            } catch (err) {}
+
             onSuccess();
         } catch (err) {
             console.error('Error saving notice:', err);

@@ -1,7 +1,7 @@
 import { jsPDF } from 'jspdf';
 import { LOGO_URI } from './logo';
 
-export const generateApplicationPDF = (formData, referenceNumber) => {
+export const generateApplicationPDF = async (formData, referenceNumber) => {
     const doc = jsPDF({
         orientation: 'p',
         unit: 'mm',
@@ -23,6 +23,7 @@ export const generateApplicationPDF = (formData, referenceNumber) => {
     };
 
     const drawGridCell = (x, y, w, h, label, value, bold = false) => {
+        doc.setLineWidth(0.2);
         doc.rect(x, y, w, h, 'S');
         doc.setFontSize(7);
         doc.setFont('helvetica', 'bold');
@@ -31,7 +32,8 @@ export const generateApplicationPDF = (formData, referenceNumber) => {
         doc.setFont('helvetica', bold ? 'bold' : 'normal');
         doc.setFontSize(8);
         const valText = value ? String(value) : '';
-        doc.text(valText, x + (w / 2), y + (h / 1.5), { align: 'center' });
+        // Use left alignment with 3mm indent to avoid right border overlap
+        doc.text(valText, x + 5, y + (h - 2));
     };
 
     const drawCheckboxes = (x, y, label, options, selectedValue) => {
@@ -368,20 +370,29 @@ export const generateApplicationPDF = (formData, referenceNumber) => {
     doc.setFont('helvetica', 'normal');
     if (formData.parent_signature) {
         try {
-            doc.addImage(formData.parent_signature, 'PNG', 110, currentY - 10, 50, 15);
-        } catch (e) { console.error("Parent sig error", e); }
+            const imgEl = new window.Image();
+            imgEl.src = formData.parent_signature;
+            await new Promise((resolve, reject) => {
+                imgEl.onload = resolve;
+                imgEl.onerror = reject;
+            });
+            const canvas = document.createElement('canvas');
+            canvas.width = imgEl.width || 400;
+            canvas.height = imgEl.height || 150;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(imgEl, 0, 0);
+            const safeJpeg = canvas.toDataURL('image/jpeg', 1.0);
+            doc.addImage(safeJpeg, 'JPEG', 110, currentY - 10, 50, 15);
+        } catch (e) {
+            console.error("Parent sig error", e);
+        }
     }
     doc.text('Signature of Parent/Guardian / Handtekening van Ouer/Voog:', margin, currentY);
     doc.line(95, currentY, 180, currentY);
 
     currentY += 15;
-    if (formData.student_signature) {
-        try {
-            doc.addImage(formData.student_signature, 'PNG', 110, currentY - 10, 50, 15);
-        } catch (e) { console.error("Student sig error", e); }
-    }
-    doc.text('Signature of Learner / Handtekening van Leerder:', margin, currentY);
-    doc.line(95, currentY, 180, currentY);
 
     currentY += 10;
     doc.text('Date:', margin, currentY);
@@ -389,9 +400,9 @@ export const generateApplicationPDF = (formData, referenceNumber) => {
     doc.text(new Date().toLocaleDateString(), 20, currentY - 1);
     doc.line(20, currentY, 80, currentY);
 
-    currentY += 12;
+    currentY += 10;
     drawSectionHeader('Documentation attached (Please mark):', currentY);
-    currentY += 6;
+    currentY += 10;
 
     const checklist = [
         '1. Birth Certificate / Geboortesertifikaat:',
@@ -404,9 +415,10 @@ export const generateApplicationPDF = (formData, referenceNumber) => {
     ];
 
     checklist.forEach((item, i) => {
-        doc.setFontSize(7);
-        doc.text(item, margin + 5, currentY + (i * 6));
-        doc.rect(160, currentY + (i * 6) - 4, 10, 5, 'S');
+        doc.setFontSize(8);
+        const itemY = currentY + (i * 8);
+        doc.text(item, margin + 5, itemY);
+        doc.rect(160, itemY - 4, 10, 6, 'S');
     });
 
     doc.setFontSize(6);

@@ -41,67 +41,79 @@ const CustomDialog = ({ isOpen, onClose, onConfirm, title, message, type = 'conf
     return (
         <AnimatePresence>
             {isOpen && (
-                <>
+                <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4 font-win">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[9999]"
+                        className="fixed inset-0 bg-black/30 backdrop-blur-[1px]"
                         onClick={type === 'alert' ? onClose : undefined}
                     />
 
-                    {/* Dialog */}
-                    <div className="fixed inset-0 flex items-center justify-center z-[10000] p-4">
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                            animate={{ opacity: 1, scale: 1, y: 0 }}
-                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                            transition={{ type: 'spring', duration: 0.3 }}
-                            className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden"
-                        >
-                            {/* Header */}
-                            <div className="relative bg-gradient-to-br from-slate-900 to-slate-800 p-6 text-center">
-                                <div className="flex justify-center mb-4">
-                                    {getIcon()}
+                    {/* Dialog (Windows 7 Styling) */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: -20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        className="win7-window relative w-full max-w-md flex flex-col z-10"
+                    >
+                        {/* Title Bar */}
+                        <div className="win7-title-bar">
+                            <div className="flex items-center gap-2">
+                                <div className={`w-4 h-4 flex items-center justify-center`}>
+                                    {getIconSmall()}
                                 </div>
-                                {title && (
-                                    <h3 className="text-xl font-black text-white uppercase tracking-wide">
-                                        {title}
-                                    </h3>
-                                )}
+                                <span className="text-[12px] font-medium text-slate-800 drop-shadow-sm">{title || 'Message'}</span>
                             </div>
+                            <button
+                                onClick={onClose}
+                                className="w-[45px] h-[18px] bg-gradient-to-b from-[#e81123]/20 to-[#e81123]/80 hover:from-[#e81123] hover:to-[#e81123] border border-white/30 rounded-[2px] flex items-center justify-center text-white transition-all shadow-sm group"
+                            >
+                                <X size={10} className="group-hover:scale-110" />
+                            </button>
+                        </div>
 
-                            {/* Content */}
-                            <div className="p-6">
-                                <p className="text-slate-700 text-center leading-relaxed whitespace-pre-line">
+                        {/* Content Area */}
+                        <div className="p-6 bg-white flex gap-4 items-start">
+                            <div className="shrink-0 mt-1">
+                                {getIconLarge()}
+                            </div>
+                            <div className="flex-1">
+                                <p className="text-[13px] text-slate-800 leading-[1.5] whitespace-pre-line">
                                     {message}
                                 </p>
                             </div>
+                        </div>
 
-                            {/* Actions */}
-                            <div className="px-6 pb-6 flex gap-3">
-                                {type !== 'alert' && (
-                                    <button
-                                        onClick={onClose}
-                                        className="flex-1 py-3 px-4 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl font-bold uppercase text-sm tracking-wide transition-colors"
-                                    >
-                                        {cancelText}
-                                    </button>
-                                )}
+                        {/* Footer / Actions */}
+                        <div className="px-4 py-3 bg-[#f0f0f0] border-t border-[#dfdfdf] flex justify-end gap-2">
+                            {type !== 'alert' && (
                                 <button
-                                    onClick={handleConfirm}
-                                    className={`flex-1 py-3 px-4 text-white rounded-xl font-bold uppercase text-sm tracking-wide transition-colors ${getAccentColor()}`}
+                                    onClick={onClose}
+                                    className="win7-button min-w-[75px]"
                                 >
-                                    {confirmText}
+                                    {cancelText}
                                 </button>
-                            </div>
-                        </motion.div>
-                    </div>
-                </>
+                            )}
+                            <button
+                                onClick={handleConfirm}
+                                className="win7-button min-w-[75px] border-[#0078d7] shadow-[0_0_2px_rgba(0,120,215,0.4)]"
+                            >
+                                {confirmText}
+                            </button>
+                        </div>
+                    </motion.div>
+                </div>
             )}
         </AnimatePresence>
     );
 };
+
+// Helper functions for icon sizes
+const getIconSmall = () => <Info size={12} className="text-blue-600" />;
+const getIconLarge = () => <AlertCircle size={32} className="text-amber-500" />;
+
 
 export default CustomDialog;

@@ -28,7 +28,7 @@ const Contact = () => {
 
             <section className="section-padding">
                 <div className="container-wide">
-                    <div className="flex flex-col lg:flex-row gap-32 items-start">
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 items-start">
                         {/* Contact Info */}
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
@@ -64,7 +64,7 @@ const Contact = () => {
                             initial={{ opacity: 0, y: 50 }}
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
-                            className="lg:w-7/12 relative bg-soft p-12 lg:p-20"
+                            className="lg:w-7/12 relative bg-soft p-6 sm:p-12 lg:p-20"
                         >
                             <AnimatePresence>
                                 {submitted && (

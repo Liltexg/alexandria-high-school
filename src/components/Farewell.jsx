@@ -11,14 +11,14 @@ const Farewell = () => {
     return (
         <section className="bg-slate-50 py-32 border-b border-slate-200">
             <div className="container-wide">
-                <div className="max-w-4xl mx-auto text-center mb-20">
-                    <span className="text-primary font-bold uppercase tracking-widest text-sm mb-4 block">Special Event</span>
-                    <h2 className="text-4xl md:text-6xl font-display font-black text-slate-900 mb-6 tracking-tight">
-                        Farewell to <br className="hidden md:block" />
-                        <span className="text-primary italic font-serif">Mrs Taai</span>
+                <div className="max-w-4xl mx-auto text-center mb-20 text-dark">
+                    <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-8 block font-win">Institutional Archive // Special Event</span>
+                    <h2 className="text-5xl md:text-8xl font-black text-dark mb-10 tracking-tighter leading-none">
+                        Celebrating <br className="hidden md:block" />
+                        <span className="text-serif italic text-primary">Mrs Eleanor Taai.</span>
                     </h2>
-                    <p className="text-lg md:text-xl text-slate-600 font-light leading-relaxed">
-                        Last Thursday, we gathered to celebrate the incredible leadership of our beloved Principal, Mrs Eleanor Taai. We thank her for her years of dedicated service, wisdom, and the caring environment she fostered at Alexandria High School.
+                    <p className="text-2xl md:text-3xl text-dark/40 font-light leading-relaxed italic border-l-2 border-primary/20 pl-12 max-w-4xl mx-auto text-left">
+                        On the 26th of March 2026, we gathered to celebrate the incredible leadership of our beloved Principal, <span className="font-bold text-dark italic">Mrs Eleanor Taai</span>. We thank her for her years of dedicated service, wisdom, and the caring environment she fostered at Alexandria High School.
                     </p>
                 </div>
 

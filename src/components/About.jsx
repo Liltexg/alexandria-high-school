@@ -18,7 +18,7 @@ const About = () => {
 
             <section className="section-padding bg-white border-b border-dark/5">
                 <div className="container-wide">
-                    <div className="flex flex-col lg:flex-row gap-32 items-center">
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-32 items-center">
                         <motion.div
                             initial={{ opacity: 0, x: -50 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -62,7 +62,7 @@ const About = () => {
 
             <section className="section-padding bg-dark text-white">
                 <div className="container-wide">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-20">
+                    <div className="grid grid-cols-1 md:grid-cols-4 gap-12 sm:gap-20">
                         {t.about.pillars.map((pillar, i) => (
                             <motion.div
                                 key={i}

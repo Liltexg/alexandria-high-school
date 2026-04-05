@@ -58,6 +58,18 @@ const NewsForm = ({ article = null, onSuccess, onCancel }) => {
             }
 
             if (error) throw error;
+
+            // Institutional News Protocol Audit
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                await supabase.from('audit_logs').insert([{
+                    actor_id: user?.id,
+                    action: article?.id ? 'NEWS_UPDATE' : 'NEWS_PUBLISH',
+                    resource_type: 'NEWS',
+                    details: { title: formData.title }
+                }]);
+            } catch (err) {}
+
             onSuccess();
         } catch (err) {
             console.error('Error saving news:', err);
@@ -77,6 +89,18 @@ const NewsForm = ({ article = null, onSuccess, onCancel }) => {
                 .delete()
                 .eq('id', article.id);
             if (error) throw error;
+
+            // Institutional News Protocol Audit
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                await supabase.from('audit_logs').insert([{
+                    actor_id: user?.id,
+                    action: 'NEWS_REMOVE',
+                    resource_type: 'NEWS',
+                    details: { title: article?.title }
+                }]);
+            } catch (err) {}
+
             onSuccess();
         } catch (err) {
             console.error('Error deleting news:', err);

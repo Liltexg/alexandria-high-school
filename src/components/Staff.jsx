@@ -259,7 +259,7 @@ const Staff = () => {
                             <button
                                 key={f.name}
                                 onClick={() => setFilter(f.name)}
-                                className={`px-10 py-5 text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-700 flex items-center gap-4 ${filter === f.name
+                                className={`px-6 py-4 sm:px-10 sm:py-5 text-[10px] sm:text-[11px] font-black uppercase tracking-[0.3em] transition-all duration-700 flex items-center gap-4 ${filter === f.name
                                     ? 'bg-dark text-white border-dark'
                                     : 'bg-white text-dark/30 border border-dark/5 hover:text-dark hover:border-dark/20'
                                     }`}
@@ -295,7 +295,7 @@ const Staff = () => {
                     )}
                 </AnimatePresence>
 
-                <div className="mt-80 pt-40 border-t border-dark/5 grid grid-cols-2 lg:grid-cols-4 gap-20 opacity-30">
+                <div className="mt-40 md:mt-80 pt-20 md:pt-40 border-t border-dark/5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 sm:gap-20 opacity-30">
                     {[
                         { val: "75%", label: t.stats_labels.pass_rate },
                         { val: "Quintile 3", label: t.stats_labels.status },

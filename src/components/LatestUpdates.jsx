@@ -20,6 +20,7 @@ const LatestUpdates = () => {
     }, [lang]); // Re-sync slides when language changes
 
     useEffect(() => {
+        let isMounted = true;
         const fetchLatestNews = async () => {
             try {
                 const { data, error } = await supabase
@@ -29,7 +30,7 @@ const LatestUpdates = () => {
                     .order('published_at', { ascending: false })
                     .limit(2);
 
-                if (!error && data && data.length > 0) {
+                if (!error && data && data.length > 0 && isMounted) {
                     const locale = lang === 'af' ? 'af-ZA' : 'en-GB';
                     const dynamicUpdates = data.map(item => ({
                         tag: item.category || (lang === 'af' ? "Hoogtepunt" : "Highlight"),
@@ -50,17 +51,18 @@ const LatestUpdates = () => {
             }
         };
         fetchLatestNews();
+        return () => { isMounted = false; };
     }, [lang]);
 
     return (
-        <section className="bg-dark py-60 noise relative overflow-hidden group border-y border-white/5">
+        <section className="bg-dark py-24 sm:py-60 noise relative overflow-hidden group border-y border-white/5">
             {/* The Cinematic Scroll Label */}
             <div className="absolute top-1/2 left-12 -translate-y-1/2 vertical-text opacity-5 pointer-events-none">
                 <span className="text-[120px] font-display font-bold text-white tracking-widest leading-none">{t.latest_updates.chronicles}</span>
             </div>
 
             <div className="container-wide relative z-10">
-                <div className="flex flex-col lg:flex-row items-start justify-between mb-40">
+                <div className="flex flex-col lg:flex-row items-start justify-between mb-16 sm:mb-40">
                     <div className="max-w-4xl">
                         <motion.div
                             initial={{ opacity: 0, y: 20 }}
@@ -101,7 +103,7 @@ const LatestUpdates = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/5 mt-32 border border-white/5">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-px bg-white/5 mt-16 sm:mt-32 border border-white/5">
                     {updates.map((update, idx) => (
                         <motion.div
                             key={idx}
@@ -109,7 +111,7 @@ const LatestUpdates = () => {
                             whileInView={{ opacity: 1, y: 0 }}
                             viewport={{ once: true }}
                             transition={{ delay: idx * 0.2, duration: 1.5, ease: [0.19, 1, 0.22, 1] }}
-                            className="bg-dark p-8 sm:p-12 md:p-16 lg:p-24 group/card relative overflow-hidden gpu"
+                            className="bg-dark p-6 sm:p-12 md:p-16 lg:p-24 group/card relative overflow-hidden gpu"
                         >
                             {/* Cinematic Hover Refraction */}
                             <div className="absolute inset-0 bg-primary/20 opacity-0 group-hover/card:opacity-10 transition-opacity duration-[2000ms]" />

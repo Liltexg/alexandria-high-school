@@ -52,7 +52,7 @@ const Footer = () => {
             <div className="container-wide relative z-10">
 
                 {/* Top Section: Organized Directory */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-24 mb-48">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-16 sm:gap-24 mb-24 sm:mb-48">
                     {navGroups.map((group) => (
                         <div key={group.title} className="border-t border-white/5 pt-12">
                             <h4 className="text-[11px] font-black uppercase tracking-[0.5em] text-accent mb-12">{group.title}</h4>
@@ -74,7 +74,7 @@ const Footer = () => {
                 </div>
 
                 {/* The Major Brand Anchor (Studio Layout) */}
-                <div className="flex flex-col items-center justify-center text-center mb-60 border-y border-white/5 py-32">
+                <div className="flex flex-col items-center justify-center text-center mb-32 sm:mb-60 border-y border-white/5 py-16 sm:py-32">
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         whileInView={{ opacity: 1, scale: 1 }}

@@ -21,12 +21,19 @@ import {
     AlertTriangle,
     ArrowUpRight,
     IdCard,
-    School
+    School,
+    Users as UsersIcon,
+    FileSpreadsheet,
+    Monitor,
+    Shield,
+    X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import logo from '../../assets/logo.png';
 import { jsPDF } from 'jspdf';
 import { generateApplicationPDF } from '../../utils/generateApplicationPDF';
 import { EMAIL_TEMPLATES, generateGmailLink, generateCallLink, getCallScript, copyToClipboard } from '../../utils/emailTemplates';
+import { exportApplicationsToExcel } from '../../utils/excelExport';
 import CustomDialog from '../../components/CustomDialog';
 
 const STATUS_COLORS = {
@@ -45,6 +52,7 @@ const Applications = () => {
     const [statusFilter, setStatusFilter] = useState('All');
     const [selectedApp, setSelectedApp] = useState(null);
     const [updatingStatus, setUpdatingStatus] = useState(false);
+    const [activeTab, setActiveTab] = useState('Overview');
     const [dialog, setDialog] = useState({ isOpen: false, type: 'confirm', title: '', message: '', onConfirm: null });
 
     useEffect(() => {
@@ -90,6 +98,24 @@ const Applications = () => {
 
             if (error) throw error;
             setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
+
+            // Institutional Audit Protocol
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                await supabase.from('audit_logs').insert([{
+                    actor_id: user?.id,
+                    action: 'STATUS_UPDATE',
+                    resource_type: 'APPLICATION',
+                    details: { 
+                        ref: selectedApp?.reference_number, 
+                        old: selectedApp?.status, 
+                        new: newStatus,
+                        learner: `${selectedApp?.learner_first_name} ${selectedApp?.learner_surname}`
+                    }
+                }]);
+            } catch (err) {
+                console.warn('Audit Sync Failed:', err);
+            }
         } catch (error) {
             console.error('Error updating status:', error);
             setDialog({
@@ -121,6 +147,22 @@ const Applications = () => {
                         .eq('id', id);
 
                     if (error) throw error;
+
+                    // Archive Integrity Audit
+                    try {
+                        const { data: { user } } = await supabase.auth.getUser();
+                        await supabase.from('audit_logs').insert([{
+                            actor_id: user?.id,
+                            action: 'RECORD_DELETION',
+                            resource_type: 'APPLICATION',
+                            details: { 
+                                ref: selectedApp?.reference_number,
+                                learner: `${selectedApp?.learner_first_name} ${selectedApp?.learner_surname}`
+                            }
+                        }]);
+                    } catch (err) {
+                        console.warn('Audit Sync Failed:', err);
+                    }
 
                     setSelectedApp(null);
                     fetchApplications();
@@ -254,58 +296,78 @@ const Applications = () => {
     });
 
     const StatsCard = ({ title, value, color, icon: Icon }) => (
-        <div className="bg-white p-6 rounded-2xl border border-slate-100 shadow-sm flex items-center justify-between">
+        <div className="win7-gadget flex items-center justify-between group hover:border-[#0078d7] transition-all">
             <div>
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 mb-1">{title}</p>
-                <p className="text-2xl font-display font-black text-slate-900">{value}</p>
+                <p className="text-[11px] font-bold text-slate-600 mb-1 uppercase tracking-wider opacity-70 group-hover:opacity-100 transition-opacity">{title}</p>
+                <p className="text-3xl font-semibold text-[#003399] tracking-tight drop-shadow-sm">{value}</p>
             </div>
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${color}`}>
-                <Icon size={20} />
+            <div className={`w-12 h-12 rounded-[4px] border border-[#d8e6f3] shadow-[inset_0_1px_3px_rgba(0,0,0,0.05)] bg-white/50 flex items-center justify-center ${color.replace('bg-', 'text-').replace('text-', '')}`}>
+                <Icon size={24} className={color.replace('bg-', 'text-').split(' ')[1]} />
             </div>
         </div>
     );
 
     return (
-        <div className="space-y-8 pb-20">
+        <div className="space-y-6 pb-20 max-w-6xl mx-auto drop-shadow-sm">
             {/* Header Area */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#b9d1ea] pb-4">
                 <div>
-                    <h1 className="text-3xl font-display font-black text-slate-900 uppercase">Enrollment Command Center</h1>
-                    <p className="text-slate-500 font-medium">Manage and review all online student applications.</p>
+                    <h1 className="text-[22px] font-semibold text-[#003399] tracking-normal mb-1 flex items-center gap-2">
+                        <UsersIcon className="text-[#0055cc]" size={22} /> Enrollment Command Center
+                    </h1>
+                    <p className="text-[12px] text-slate-600 font-medium tracking-normal">Manage and review all online student applications.</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-6 py-3 bg-slate-900 text-white rounded-xl font-black uppercase tracking-widest text-[10px] hover:bg-primary transition-all shadow-xl shadow-slate-200">
+                    <button
+                        onClick={async () => {
+                            exportApplicationsToExcel(filteredApps);
+                            try {
+                                const { data: { user } } = await supabase.auth.getUser();
+                                await supabase.from('audit_logs').insert([{
+                                    actor_id: user?.id,
+                                    action: 'DATA_EXPORT',
+                                    resource_type: 'EXCEL_SYNC',
+                                    details: { count: filteredApps.length }
+                                }]);
+                            } catch (err) {}
+                        }}
+                        className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-[#ffffff] to-[#e1f5fe] border border-[#0288d1]/30 rounded-[3px] shadow-sm hover:from-[#e1f5fe] hover:to-[#b3e5fc] hover:border-[#0288d1] text-[#01579b] transition-all text-[12px] font-semibold group"
+                    >
+                        <FileSpreadsheet size={16} className="text-[#1d6f42] group-hover:scale-110 transition-transform" /> 
+                        MS Excel "Live Sync"
+                    </button>
+                    <button className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-[#ffffff] to-[#e5e5e5] border border-[#a0a0a0] rounded-[3px] shadow-sm hover:from-[#e5f1fb] hover:to-[#d8eaf9] hover:border-[#0078d7] text-[#333333] transition-all text-[12px] font-medium opacity-50 cursor-not-allowed">
                         <Download size={14} /> Export CSV
                     </button>
                 </div>
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatsCard title="Total Applications" value={applications.length} color="bg-slate-100 text-slate-600" icon={FileText} />
-                <StatsCard title="New / Submitted" value={applications.filter(a => a.status === 'Submitted').length} color="bg-blue-50 text-blue-600" icon={Clock} />
-                <StatsCard title="Accepted" value={applications.filter(a => a.status === 'Accepted').length} color="bg-emerald-50 text-emerald-600" icon={CheckCircle} />
-                <StatsCard title="Waitlisted" value={applications.filter(a => a.status === 'Waitlisted').length} color="bg-amber-50 text-amber-600" icon={AlertTriangle} />
+                <StatsCard title="New / Submitted" value={applications.filter(a => a.status === 'Submitted').length} color="bg-blue-50 text-[#0055cc]" icon={Clock} />
+                <StatsCard title="Accepted" value={applications.filter(a => a.status === 'Accepted').length} color="bg-emerald-50 text-[#008040]" icon={CheckCircle} />
+                <StatsCard title="Waitlisted" value={applications.filter(a => a.status === 'Waitlisted').length} color="bg-amber-50 text-[#d47800]" icon={AlertTriangle} />
             </div>
 
             {/* Controls & Search */}
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col md:flex-row gap-4 bg-gradient-to-b from-white to-[#f0f5fa] p-3 rounded-[4px] border border-[#a3c3e6] shadow-[inset_0_1px_0_rgba(255,255,255,1)]">
                 <div className="relative flex-grow">
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-300" size={18} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={16} />
                     <input
                         type="text"
                         placeholder="Search by Ref #, Name or Surname..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 bg-white border border-slate-100 rounded-2xl focus:border-primary focus:outline-none font-bold"
+                        className="w-full pl-9 pr-3 py-1.5 bg-white border border-[#a0a0a0] rounded-[3px] text-[13px] focus:border-[#0078d7] focus:outline-none shadow-inner"
                     />
                 </div>
-                <div className="flex items-center gap-2 bg-white p-2 rounded-2xl border border-slate-100">
+                <div className="flex flex-wrap items-center gap-1.5">
                     {['All', 'Submitted', 'In Review', 'Accepted', 'Waitlisted'].map(status => (
                         <button
                             key={status}
                             onClick={() => setStatusFilter(status)}
-                            className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${statusFilter === status ? 'bg-primary text-white shadow-lg shadow-primary/20' : 'text-slate-400 hover:bg-slate-50'
+                            className={`px-3 py-1.5 rounded-[3px] text-[12px] font-medium transition-all ${statusFilter === status ? 'bg-[#cce8ff] border border-[#99d1ff] text-[#003399]' : 'border border-transparent text-slate-600 hover:bg-[#e5f3ff] hover:border-[#cce8ff]'
                                 }`}
                         >
                             {status}
@@ -315,58 +377,68 @@ const Applications = () => {
             </div>
 
             {/* Application List */}
-            <div className="bg-white rounded-3xl border border-slate-100 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                        <thead>
-                            <tr className="bg-slate-50/50 border-b border-slate-100">
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Reference / Learner</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Grade</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Date Applied</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400">Status</th>
-                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-400 text-right">Action</th>
+            <div className="win7-window overflow-hidden !rounded-[5px]">
+                <div className="win7-title-bar !bg-gradient-to-b !from-[#f0f5fa] !to-[#e4edf8] !border-b !border-[#a3c3e6] !px-4 !py-2 shrink-0">
+                    <div className="flex items-center gap-2">
+                        <FileText size={16} className="text-[#0055cc]" />
+                        <span className="text-[13px] font-semibold text-[#003399] drop-shadow-none">Application Records</span>
+                    </div>
+                </div>
+                <div className="overflow-x-hidden md:overflow-x-auto w-full bg-white">
+                    <table className="w-full text-left block md:table">
+                        <thead className="hidden md:table-header-group">
+                            <tr className="bg-[#f5f9ff] border-b border-[#b9d1ea] shadow-[inset_0_1px_0_white]">
+                                <th className="px-4 py-3 text-[11px] font-bold text-slate-600 border-r border-[#d8e6f3] uppercase tracking-wider">Reference / Learner</th>
+                                <th className="px-4 py-3 text-[11px] font-bold text-slate-600 border-r border-[#d8e6f3] uppercase tracking-wider">Grade</th>
+                                <th className="px-4 py-3 text-[11px] font-bold text-slate-600 border-r border-[#d8e6f3] uppercase tracking-wider">Date Applied</th>
+                                <th className="px-4 py-3 text-[11px] font-bold text-slate-600 border-r border-[#d8e6f3] uppercase tracking-wider">Status</th>
+                                <th className="px-4 py-3 text-[11px] font-bold text-slate-600 text-right uppercase tracking-wider">Action</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-slate-50 font-bold">
+                        <tbody className="block md:table-row-group font-medium border-t md:border-0 border-slate-100">
                             {loading ? (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-20 text-center">
-                                        <Loader2 className="animate-spin text-primary inline-block mb-4" size={32} />
-                                        <p className="text-slate-400 uppercase text-[10px] font-black">Loading Applications...</p>
+                                <tr className="flex md:table-row">
+                                    <td colSpan="5" className="px-4 py-16 text-center w-full block">
+                                        <Loader2 className="animate-spin text-[#0055cc] inline-block mb-3" size={24} />
+                                        <p className="text-slate-500 text-[12px] font-medium block">Loading Applications...</p>
                                     </td>
                                 </tr>
                             ) : filteredApps.length === 0 ? (
-                                <tr>
-                                    <td colSpan="5" className="px-6 py-20 text-center">
-                                        <p className="text-slate-400 uppercase text-[10px] font-black">No applications found.</p>
+                                <tr className="flex md:table-row">
+                                    <td colSpan="5" className="px-4 py-16 text-center w-full block">
+                                        <p className="text-slate-500 text-[12px] font-medium block">No applications found.</p>
                                     </td>
                                 </tr>
                             ) : (
                                 filteredApps.map((app) => (
-                                    <tr key={app.id} className="hover:bg-slate-50/50 transition-colors group">
-                                        <td className="px-6 py-6">
-                                            <div className="flex flex-col">
-                                                <span className="text-primary text-[10px] font-black uppercase tracking-wider mb-1">{app.reference_number}</span>
-                                                <span className="text-slate-900 font-black uppercase italic tracking-tight">{app.learner_first_name} {app.learner_surname}</span>
+                                    <tr key={app.id} className="flex flex-col md:table-row hover:bg-[#cce8ff] transition-all group p-3 md:p-0 border-b border-[#d8e6f3] cursor-default">
+                                        <td className="px-2 py-1 md:px-4 md:py-3 flex justify-between items-center md:table-cell md:border-r md:border-[#d8e6f3] group-hover:bg-[#cce8ff]">
+                                            <span className="md:hidden text-[11px] text-slate-500 font-semibold">Learner</span>
+                                            <div className="flex flex-col text-right md:text-left">
+                                                <span className="text-[#0055cc] text-[11px] font-bold mb-0.5 opacity-80 group-hover:opacity-100">{app.reference_number}</span>
+                                                <span className="text-slate-900 text-[13px] font-medium">{app.learner_first_name} {app.learner_surname}</span>
                                             </div>
                                         </td>
-                                        <td className="px-6 py-6">
-                                            <span className="px-3 py-1 bg-slate-100 rounded-lg text-[10px] font-black uppercase">{app.grade_applying_for}</span>
+                                        <td className="px-2 py-1 md:px-4 md:py-3 flex justify-between items-center md:table-cell md:border-r md:border-[#d8e6f3] group-hover:bg-[#cce8ff]">
+                                            <span className="md:hidden text-[11px] text-slate-500 font-semibold">Grade</span>
+                                            <span className="text-[13px] font-medium">{app.grade_applying_for}</span>
                                         </td>
-                                        <td className="px-6 py-6 text-slate-400 text-xs">
-                                            {new Date(app.created_at).toLocaleDateString()}
+                                        <td className="px-2 py-1 md:px-4 md:py-3 flex justify-between items-center md:table-cell text-slate-600 text-[13px] md:border-r md:border-[#d8e6f3] group-hover:bg-[#cce8ff]">
+                                            <span className="md:hidden text-[11px] text-slate-500 font-semibold">Date Applied</span>
+                                            <span className="font-medium">{new Date(app.created_at).toLocaleDateString()}</span>
                                         </td>
-                                        <td className="px-6 py-6">
-                                            <span className={`px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widst ${STATUS_COLORS[app.status] || 'bg-slate-100 text-slate-600'}`}>
+                                        <td className="px-2 py-1 md:px-4 md:py-3 flex justify-between items-center md:table-cell md:border-r md:border-[#d8e6f3] group-hover:bg-[#cce8ff]">
+                                            <span className="md:hidden text-[11px] text-slate-500 font-semibold">Status</span>
+                                            <span className={`px-2 py-0.5 rounded-[3px] text-[10px] font-bold uppercase border shadow-sm ${app.status === 'Accepted' ? 'bg-[#e5fbe5] text-[#008040] border-[#b3e6b3]' : app.status === 'Waitlisted' ? 'bg-[#fff5e5] text-[#d47800] border-[#ffe6b3]' : app.status === 'Rejected' ? 'bg-[#ffe5e5] text-[#cc0000] border-[#ffb3b3]' : 'bg-[#f0f5fa] text-[#003399] border-[#a3c3e6]'}`}>
                                                 {app.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-6 text-right">
+                                        <td className="px-2 pt-3 md:px-4 md:py-3 flex justify-center md:justify-end md:table-cell mt-1 md:mt-0 border-t md:border-0 border-slate-100 text-right w-full md:w-auto group-hover:bg-[#cce8ff]">
                                             <button
                                                 onClick={() => setSelectedApp(app)}
-                                                className="p-3 bg-slate-50 text-slate-400 rounded-xl hover:bg-primary hover:text-white transition-all group-hover:shadow-lg"
+                                                className="win7-button !py-1 text-[11px]"
                                             >
-                                                <Eye size={16} />
+                                                <Eye size={12} className="text-[#0055cc]" /> Review
                                             </button>
                                         </td>
                                     </tr>
@@ -377,253 +449,319 @@ const Applications = () => {
                 </div>
             </div>
 
-            {/* Application Review Modal */}
-            <AnimatePresence>
+            {/* Admin Office Minimalist Workspace */}
+            <AnimatePresence mode="wait">
                 {selectedApp && (
-                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-hidden">
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            exit={{ opacity: 0 }}
-                            onClick={() => setSelectedApp(null)}
-                            className="absolute inset-0 bg-slate-900/80 backdrop-blur-sm"
-                        />
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.95 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.95 }}
-                            className="relative w-full max-w-5xl bg-white shadow-2xl overflow-hidden flex flex-col max-h-[95vh]"
-                        >
-                            {/* Header */}
-                            <div className="bg-gradient-to-r from-slate-800 to-slate-900 px-8 py-6 flex items-center justify-between border-b-4 border-primary">
-                                <div className="flex items-center gap-4">
-                                    <div className="w-12 h-12 bg-white/10 rounded-lg flex items-center justify-center">
-                                        <FileText className="text-white" size={24} />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-white">Application Review</h2>
-                                        <p className="text-sm text-slate-300 font-medium">{selectedApp.reference_number}</p>
-                                    </div>
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 10 }}
+                        className="absolute inset-[-40px] md:inset-[-56px] z-[60] bg-white flex flex-col overflow-hidden shadow-[0_30px_100px_rgba(0,0,0,0.15)] rounded-lg border border-slate-200"
+                    >
+                        {/* Professional Top Bar */}
+                        <div className="h-14 bg-white border-b border-slate-200 px-6 flex items-center justify-between shrink-0">
+                            <div className="flex items-center gap-4">
+                                <img src={logo} alt="School Logo" className="h-8 grayscale opacity-50" />
+                                <div className="h-6 w-px bg-slate-200 mx-2" />
+                                <div className="flex flex-col">
+                                    <span className="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none mb-1">Administrative Office // Admissions</span>
+                                    <span className="text-[14px] font-bold text-slate-800">
+                                        Learner Record: {selectedApp.learner_first_name} {selectedApp.learner_surname}
+                                    </span>
                                 </div>
-                                <button
-                                    onClick={() => setSelectedApp(null)}
-                                    className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-lg flex items-center justify-center text-white transition-colors"
+                            </div>
+                            <div className="flex items-center gap-3">
+                                <span className="text-[11px] font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Ref: {selectedApp.reference_number}</span>
+                                <button 
+                                    onClick={() => setSelectedApp(null)} 
+                                    className="p-1 px-3 hover:bg-rose-50 text-slate-400 hover:text-rose-600 transition-all text-xs font-bold uppercase border border-transparent hover:border-rose-100 rounded"
                                 >
-                                    <XCircle size={20} />
+                                    Close File
                                 </button>
                             </div>
+                        </div>
 
-                            <div className="flex flex-1 overflow-hidden">
-                                {/* Main Content */}
-                                <div className="flex-1 overflow-y-auto p-8 bg-slate-50">
-                                    {/* Applicant Info Card */}
-                                    <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-                                        <div className="flex items-start justify-between mb-4">
-                                            <div>
-                                                <h3 className="text-xl font-bold text-slate-900 mb-1">
-                                                    {selectedApp.learner_first_name} {selectedApp.learner_surname}
-                                                </h3>
-                                                <p className="text-sm text-slate-500 font-medium">Applying for {selectedApp.grade_applying_for} • {selectedApp.intake_year}</p>
-                                            </div>
-                                            <div className={`px-4 py-2 rounded-lg text-xs font-bold uppercase ${STATUS_COLORS[selectedApp.status]}`}>
-                                                {selectedApp.status}
-                                            </div>
-                                        </div>
-                                        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-slate-100">
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">ID Number</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedApp.id_number}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Date of Birth</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedApp.date_of_birth}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Gender</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedApp.gender}</p>
-                                            </div>
-                                        </div>
-                                    </div>
+                        {/* File Tabs */}
+                        <div className="h-10 bg-slate-50 border-b border-slate-200 px-6 flex items-center gap-6 shrink-0">
+                            {['Overview', 'Guardian Info', 'Academic Record', 'Decision Node'].map((tab) => (
+                                <button 
+                                    key={tab}
+                                    onClick={() => setActiveTab(tab === 'Decision' || tab === 'Decision Node' ? 'Decision Engine' : tab)}
+                                    className={`h-full text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === (tab === 'Decision' || tab === 'Decision Node' ? 'Decision Engine' : tab) ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                                >
+                                    {tab}
+                                </button>
+                            ))}
+                        </div>
 
-                                    {/* Contact Information */}
-                                    <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-                                        <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
-                                            Guardian Contact Information
-                                        </h4>
-                                        <div className="space-y-4">
-                                            <div className="grid grid-cols-2 gap-4">
-                                                <div>
-                                                    <p className="text-xs text-slate-500 font-medium mb-1">Primary Guardian</p>
-                                                    <p className="text-sm font-bold text-slate-900">{selectedApp.parent_primary_name}</p>
-                                                    <p className="text-xs text-slate-500">({selectedApp.parent_primary_relationship})</p>
+                        <div className="flex-1 flex overflow-hidden">
+                            {/* Main Document Body */}
+                            <div className="flex-1 overflow-y-auto p-12 custom-scrollbar bg-white">
+                                <div className="max-w-3xl mx-auto">
+                                    {activeTab === 'Overview' && (
+                                        <div className="space-y-12">
+                                            {/* Primary Identity Section */}
+                                            <section className="flex gap-10 items-start">
+                                                <div className="w-40 h-52 bg-slate-100 border border-slate-200 rounded flex items-center justify-center text-slate-300">
+                                                    <User size={64} />
                                                 </div>
-                                                <div>
-                                                    <p className="text-xs text-slate-500 font-medium mb-1">Contact Number</p>
-                                                    <p className="text-sm font-bold text-slate-900">{selectedApp.parent_primary_contact}</p>
+                                                <div className="flex-1">
+                                                    <h2 className="text-4xl font-bold text-slate-900 tracking-tight leading-tight uppercase mb-6">{selectedApp.learner_first_name} {selectedApp.learner_surname}</h2>
+                                                    <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Applying Grade</label>
+                                                            <p className="text-lg font-bold text-slate-800">Grade {selectedApp.grade_applying_for}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Cycle</label>
+                                                            <p className="text-lg font-bold text-slate-800">{selectedApp.intake_year}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">ID Number</label>
+                                                            <p className="text-lg font-bold text-slate-800">{selectedApp.id_number || 'N/A'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Status</label>
+                                                            <p className={`text-sm font-bold uppercase tracking-widest px-2 py-0.5 inline-block rounded ${STATUS_COLORS[selectedApp.status]}`}>{selectedApp.status}</p>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                            </section>
+
+                                            <div className="h-px bg-slate-100 w-full" />
+
+                                            {/* Contact Grid Section */}
+                                            <section className="grid grid-cols-2 gap-12">
+                                                <div className="space-y-4">
+                                                    <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Residence Coordinates</h3>
+                                                    <div className="space-y-1">
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.address_street}</p>
+                                                        <p className="text-sm text-slate-500 uppercase">{selectedApp.address_suburb}, {selectedApp.address_city}</p>
+                                                        <p className="text-xs text-slate-400 tracking-widest uppercase">{selectedApp.address_province} {selectedApp.address_postal_code}</p>
+                                                    </div>
+                                                </div>
+                                                <div className="space-y-4">
+                                                    <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Demographics</h3>
+                                                    <div className="grid grid-cols-1 gap-2">
+                                                        <div className="flex justify-between items-center text-xs">
+                                                            <span className="text-slate-400 uppercase font-bold tracking-widest">Gender</span>
+                                                            <span className="text-slate-700 font-bold uppercase">{selectedApp.gender}</span>
+                                                        </div>
+                                                        <div className="flex justify-between items-center text-xs">
+                                                            <span className="text-slate-400 uppercase font-bold tracking-widest">Citizenship</span>
+                                                            <span className="text-slate-700 font-bold uppercase">{selectedApp.citizenship}</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'Guardian Info' && (
+                                        <div className="space-y-12">
+                                            {/* Primary Guardian */}
+                                            <section className="space-y-6">
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Primary Custodian Profile</h3>
+                                                <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name & Title</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_title || ''} {selectedApp.parent_primary_name} {selectedApp.parent_primary_surname}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Relationship</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_relationship}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">ID / Passport</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_id || 'N/A'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Employment</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_occupation || 'N/A'}</p>
+                                                        <p className="text-xs text-slate-400 uppercase">{selectedApp.parent_primary_employer || ''}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact Relay</label>
+                                                        <p className="text-md font-bold text-[#003366]">{selectedApp.parent_primary_contact}</p>
+                                                        <p className="text-xs text-slate-500">{selectedApp.parent_primary_email}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Marital State</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_marital_status || 'N/A'}</p>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <div className="h-px bg-slate-100 w-full" />
+
+                                            {/* Secondary Guardian */}
+                                            <section className="space-y-6">
+                                                <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-100">Secondary Custodian (If Applicable)</h3>
+                                                {selectedApp.parent_secondary_name ? (
+                                                    <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
+                                                            <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_secondary_title || ''} {selectedApp.parent_secondary_name} {selectedApp.parent_secondary_surname}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Relationship</label>
+                                                            <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_secondary_relationship}</p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <p className="text-xs text-slate-300 italic uppercase tracking-widest">No secondary custodian record detected.</p>
+                                                )}
+                                            </section>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'Academic Record' && (
+                                        <div className="space-y-12">
+                                            {/* Current Schooling */}
+                                            <section className="space-y-6">
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Educational Registry History</h3>
+                                                <div className="space-y-6">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Previous Institution</label>
+                                                        <p className="text-xl font-bold text-slate-800 uppercase tracking-tight">{selectedApp.current_school_name || 'HOME SCHOOLED / N/A'}</p>
+                                                        <p className="text-xs text-slate-500 uppercase mt-1">{selectedApp.current_school_address}</p>
+                                                    </div>
+                                                    <div className="grid grid-cols-2 gap-12">
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Instruction Language</label>
+                                                            <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.preferred_language}</p>
+                                                            <p className="text-xs text-slate-400 uppercase tracking-widest">(Home: {selectedApp.home_language})</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Boarding Requirement</label>
+                                                            <p className={`text-md font-bold uppercase ${selectedApp.is_boarder ? 'text-blue-600' : 'text-slate-400'}`}>{selectedApp.is_boarder ? 'PROPOSED BOARDER' : 'DAY STUDENT'}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </section>
+
+                                            <div className="h-px bg-slate-100 w-full" />
+
+                                            {/* Operational Metadata */}
+                                            <section className="space-y-6">
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Operational Protocol</h3>
+                                                <div className="grid grid-cols-2 gap-12">
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Transit Mode</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.mode_of_transport || 'NOT SPECIFIED'}</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Siblings in Registry</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.siblings_info ? 'MATCH DETECTED' : 'SOLITARY ENTRY'}</p>
+                                                        <p className="text-[10px] text-slate-400 uppercase">{selectedApp.siblings_info || 'No sibling details provided.'}</p>
+                                                    </div>
+                                                </div>
+                                            </section>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'Decision Engine' && (
+                                        <div className="max-w-xl mx-auto py-10 space-y-10">
+                                            <div className="border-b border-slate-100 pb-8">
+                                                <h3 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">Executive Adjudication</h3>
+                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Formal Record Update Node</p>
                                             </div>
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Email Address</p>
-                                                <p className="text-sm font-bold text-primary">{selectedApp.parent_primary_email}</p>
+                                            <div className="grid grid-cols-1 gap-3">
+                                                {[
+                                                    { label: 'ACCEPT APPLICATION', status: 'Accepted', color: 'hover:bg-emerald-50 text-emerald-600 border-emerald-100', icon: CheckCircle },
+                                                    { label: 'REJECT RECORD', status: 'Rejected', color: 'hover:bg-rose-50 text-rose-600 border-rose-100', icon: XCircle },
+                                                    { label: 'WAITLIST NODE', status: 'Waitlisted', color: 'hover:bg-amber-50 text-amber-600 border-amber-100', icon: Clock },
+                                                    { label: 'FLAG AS INCOMPLETE', status: 'Awaiting Documents', color: 'hover:bg-blue-50 text-blue-600 border-blue-100', icon: FileText }
+                                                ].map((action) => (
+                                                    <button 
+                                                        key={action.status}
+                                                        onClick={() => updateStatus(selectedApp.id, action.status)}
+                                                        className={`flex items-center justify-between p-4 rounded border-2 transition-all font-bold tracking-widest text-[11px] uppercase ${action.color} ${updatingStatus ? 'opacity-50 cursor-not-allowed' : 'hover:scale-[1.01]'}`}
+                                                    >
+                                                        <div className="flex items-center gap-4">
+                                                            <action.icon size={18} />
+                                                            <span>{action.label}</span>
+                                                        </div>
+                                                        <ChevronRight size={16} />
+                                                    </button>
+                                                ))}
                                             </div>
                                         </div>
-                                    </div>
-
-                                    {/* Address */}
-                                    <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-                                        <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
-                                            Residential Address
-                                        </h4>
-                                        <p className="text-sm font-medium text-slate-700 leading-relaxed">
-                                            {selectedApp.address_street}<br />
-                                            {selectedApp.address_suburb}, {selectedApp.address_city}<br />
-                                            {selectedApp.address_postal_code}, {selectedApp.address_province}
-                                        </p>
-                                        <div className="mt-4 pt-4 border-t border-slate-100">
-                                            <p className="text-xs text-slate-500 font-medium mb-1">Emergency Contact</p>
-                                            <p className="text-sm font-bold text-slate-900">
-                                                {selectedApp.emergency_contact_name} • {selectedApp.emergency_contact_number}
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    {/* Academic Background */}
-                                    <div className="bg-white border border-slate-200 rounded-lg p-6 mb-6">
-                                        <h4 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
-                                            Current School Information
-                                        </h4>
-                                        <div className="grid grid-cols-2 gap-4">
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">School Name</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedApp.current_school_name}</p>
-                                            </div>
-                                            <div>
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Current Grade</p>
-                                                <p className="text-sm font-bold text-slate-900">{selectedApp.current_grade}</p>
-                                            </div>
-                                        </div>
-                                        {selectedApp.reason_for_transfer && (
-                                            <div className="mt-4 pt-4 border-t border-slate-100">
-                                                <p className="text-xs text-slate-500 font-medium mb-1">Reason for Transfer</p>
-                                                <p className="text-sm text-slate-700">{selectedApp.reason_for_transfer}</p>
-                                            </div>
-                                        )}
-                                    </div>
-
-                                    {/* Supporting Documents Notice */}
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-                                        <div className="flex items-start gap-3">
-                                            <Mail className="text-blue-600 shrink-0 mt-0.5" size={20} />
-                                            <div>
-                                                <h4 className="text-sm font-bold text-blue-900 mb-1">Document Submission</h4>
-                                                <p className="text-xs text-blue-700 leading-relaxed">
-                                                    Applicant has been instructed to email supporting documents to <span className="font-bold">alexandriahigh6185@gmail.com</span> with reference number as subject line.
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Sidebar Actions */}
-                                <div className="w-80 bg-white border-l border-slate-200 p-6 overflow-y-auto">
-                                    <h3 className="text-sm font-bold text-slate-900 uppercase tracking-wider mb-4">Application Actions</h3>
-
-                                    <div className="space-y-3 mb-6">
-                                        <label className="block text-xs text-slate-500 font-medium mb-2">Update Status</label>
-                                        {[
-                                            { id: 'In Review', icon: Clock, color: 'bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100' },
-                                            { id: 'Accepted', icon: CheckCircle, color: 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100' },
-                                            { id: 'Waitlisted', icon: AlertTriangle, color: 'bg-amber-50 border-amber-200 text-amber-700 hover:bg-amber-100' },
-                                            { id: 'Rejected', icon: XCircle, color: 'bg-rose-50 border-rose-200 text-rose-700 hover:bg-rose-100' },
-                                            { id: 'Awaiting Documents', icon: FileText, color: 'bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100' }
-                                        ].map(btn => (
-                                            <button
-                                                key={btn.id}
-                                                disabled={updatingStatus}
-                                                onClick={() => updateStatus(selectedApp.id, btn.id)}
-                                                className={`w-full p-3 border-2 rounded-lg text-xs font-bold uppercase tracking-wide flex items-center gap-2 transition-all ${selectedApp.status === btn.id
-                                                    ? 'bg-slate-900 border-slate-900 text-white'
-                                                    : btn.color
-                                                    }`}
-                                            >
-                                                <btn.icon size={14} />
-                                                {btn.id}
-                                                {selectedApp.status === btn.id && <CheckCircle size={14} className="ml-auto" />}
-                                            </button>
-                                        ))}
-                                    </div>
-
-                                    {/* Response Communication Section */}
-                                    <div className="pt-6 border-t border-slate-200">
-                                        <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-3">Respond to Applicant</h4>
-
-                                        <div className="space-y-2 mb-4">
-                                            <button
-                                                onClick={() => handleEmailResponse(selectedApp, 'accepted')}
-                                                className="w-full py-2.5 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 rounded-lg text-xs font-bold text-emerald-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <Mail size={14} />
-                                                Email: Accepted
-                                            </button>
-                                            <button
-                                                onClick={() => handleEmailResponse(selectedApp, 'rejected')}
-                                                className="w-full py-2.5 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-lg text-xs font-bold text-rose-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <Mail size={14} />
-                                                Email: Rejected
-                                            </button>
-                                            <button
-                                                onClick={() => handleEmailResponse(selectedApp, 'waitlisted')}
-                                                className="w-full py-2.5 bg-amber-50 hover:bg-amber-100 border border-amber-300 rounded-lg text-xs font-bold text-amber-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <Mail size={14} />
-                                                Email: Waitlisted
-                                            </button>
-                                            <button
-                                                onClick={() => handleEmailResponse(selectedApp, 'incomplete')}
-                                                className="w-full py-2.5 bg-purple-50 hover:bg-purple-100 border border-purple-300 rounded-lg text-xs font-bold text-purple-700 transition-colors flex items-center justify-center gap-2"
-                                            >
-                                                <Mail size={14} />
-                                                Email: Incomplete
-                                            </button>
-                                        </div>
-
-                                        <button
-                                            onClick={() => handleCall(selectedApp)}
-                                            className="w-full py-3 bg-blue-50 hover:bg-blue-100 border-2 border-blue-300 rounded-lg text-xs font-bold text-blue-700 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Phone size={14} />
-                                            Call Applicant
-                                        </button>
-                                    </div>
-
-                                    <div className="pt-6 border-t border-slate-200 space-y-3">
-                                        <button
-                                            onClick={() => generateApplicationPDF(selectedApp, selectedApp.reference_number)}
-                                            className="w-full py-3 bg-slate-100 hover:bg-slate-200 border border-slate-300 rounded-lg text-xs font-bold uppercase tracking-wide text-slate-700 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <Download size={14} />
-                                            Download Admission Form
-                                        </button>
-                                        <button
-                                            onClick={() => deleteApplication(selectedApp.id)}
-                                            className="w-full py-3 bg-rose-50 hover:bg-rose-100 border border-rose-300 rounded-lg text-xs font-bold uppercase tracking-wide text-rose-700 transition-colors flex items-center justify-center gap-2"
-                                        >
-                                            <XCircle size={14} />
-                                            Delete Application
-                                        </button>
-                                    </div>
-
-                                    <div className="mt-6 pt-6 border-t border-slate-200 text-center">
-                                        <p className="text-xs text-slate-400 font-medium mb-2">Application Date</p>
-                                        <p className="text-sm font-bold text-slate-700">{new Date(selectedApp.created_at).toLocaleDateString('en-ZA', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
-                                    </div>
+                                    )}
                                 </div>
                             </div>
-                        </motion.div>
-                    </div>
+
+                            {/* Minimalist Office Sidebar */}
+                            <div className="w-80 border-l border-slate-200 bg-slate-50 flex flex-col shrink-0">
+                                <div className="p-8 space-y-10">
+                                    <section className="space-y-4">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Relay Protocol</label>
+                                        <div className="grid grid-cols-1 gap-2">
+                                            <button onClick={() => handleEmailResponse(selectedApp, 'accepted')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-blue-500" /> Confirm Entry</button>
+                                            <button onClick={() => handleEmailResponse(selectedApp, 'rejected')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-rose-500" /> Formal Exit</button>
+                                            <button onClick={() => handleEmailResponse(selectedApp, 'incomplete')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><MessageSquare size={16} className="text-amber-500" /> Request Docs</button>
+                                        </div>
+                                        <button onClick={() => handleCall(selectedApp)} className="win7-button w-full !h-16 !bg-[#003366] !text-white !border-none !text-[13px] !font-bold tracking-[0.2em] uppercase gap-4 mt-4 shadow-lg active:scale-95 transition-all"><Phone size={18} /> CONTACT PARENT</button>
+                                    </section>
+
+                                    <section className="pt-10 border-t border-slate-200 space-y-4">
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Institutional Storage</label>
+                                        <div className="flex gap-2">
+                                            <button 
+                                                onClick={async () => {
+                                                    try {
+                                                        let signature = selectedApp.parent_signature;
+
+                                                        // Fallback for legacy applications if the signature is missing in the primary table
+                                                        if (!signature) {
+                                                            const { data: drafts } = await supabase
+                                                                .from('application_drafts')
+                                                                .select('form_data')
+                                                                .eq('email', selectedApp.parent_primary_email)
+                                                                .order('updated_at', { ascending: false })
+                                                                .limit(1);
+                                                            signature = drafts?.[0]?.form_data?.parent_signature || '';
+                                                        }
+
+                                                        const fullAppProfile = { ...selectedApp, parent_signature: signature };
+                                                        await generateApplicationPDF(fullAppProfile, selectedApp.reference_number);
+
+                                                        const { data: { user } } = await supabase.auth.getUser();
+                                                        await supabase.from('audit_logs').insert([{
+                                                            actor_id: user?.id,
+                                                            action: 'DOCUMENT_GENERATION',
+                                                            resource_type: 'PDF_FORM',
+                                                            details: { ref: selectedApp.reference_number, signature_recovered: !!signature }
+                                                        }]);
+                                                    } catch (err) {
+                                                        console.error("PDF Compiling failed", err);
+                                                    }
+                                                }}
+                                                className="win7-button flex-1 !justify-center gap-2 !h-14 !text-[10px] !font-bold !bg-white border-2 hover:bg-slate-50 uppercase tracking-widest"
+                                            >
+                                                <Download size={14} /> GENERATE PDF
+                                            </button>
+                                        </div>
+                                        <div className="flex justify-center pt-6">
+                                            <button 
+                                                onClick={() => deleteApplication(selectedApp.id)}
+                                                className="text-rose-400 hover:text-rose-600 text-[9px] font-bold uppercase tracking-widest transition-all hover:underline"
+                                            >
+                                                ELIMINATE ARCHIVE RECORD
+                                            </button>
+                                        </div>
+                                    </section>
+                                </div>
+
+                                <div className="p-6 text-center border-t border-slate-200 mt-auto">
+                                    <p className="text-[8px] text-slate-300 font-bold uppercase tracking-[0.4em]">ALEXANDRIA_OFFICE_CORE_V4</p>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
+
 
             <CustomDialog
                 isOpen={dialog.isOpen}

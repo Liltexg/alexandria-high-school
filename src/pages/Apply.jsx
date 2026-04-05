@@ -839,7 +839,7 @@ const AddressStep = ({ formData, updateFormData, t }) => (
             <span className="text-white font-display font-bold uppercase tracking-widest text-sm mb-8 block">{t.apply_form.emergency_contact}</span>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
                 <div className="p-4 bg-white/5 rounded-xl border border-white/10 focus-within:border-primary focus-within:bg-white/10 transition-all flex flex-col gap-2">
-                    <label className="text-xs font-semibold uppercase tracking-wider text-white/50">{t.admissions.requirements.items[0].title.includes("ID") ? "Kontak Naam" : "Contact Name"}</label>
+                    <label className="text-xs font-semibold uppercase tracking-wider text-white/50">{t.apply_form.emergency_contact === "Noodkontak" ? "Kontak Naam" : "Contact Name"}</label>
                     <input
                         type="text"
                         value={formData.emergency_contact_name}
@@ -981,7 +981,15 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                             <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-3xl -mr-16 -mt-16 group-hover:bg-primary/40 transition-all duration-1000" />
                             <h4 className="text-sm font-bold uppercase tracking-[0.3em] mb-10 text-primary">{t.checklist}</h4>
                             <ul className="space-y-6">
-                                {t.checklist_items.map((item, idx) => (
+                                {(t.apply_form.checklist_items || t.checklist_items || [
+                                    "1. Birth Certificate / Geboortesertifikaat",
+                                    "2. Progress report from previous school",
+                                    "3. Immunisation record / Inentingsertifikaat",
+                                    "4. Proof of Address / Bewys van Adres",
+                                    "5. ID Copies of Parents/Guardians",
+                                    "6. If Guardian (Court Documents)",
+                                    "7. Provisional Transfer letter"
+                                ]).map((item, idx) => (
                                     <li key={idx} className="flex items-center gap-3">
                                         <div className="w-1.5 h-1.5 bg-primary rounded-full" />
                                         {item}
@@ -1021,6 +1029,12 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                 </div>
 
                 <div className="flex flex-col items-center gap-6 pt-8">
+                    {formData.parent_signature && (
+                        <div className="w-full max-w-sm mb-4">
+                            <span className="block text-xs font-bold text-dark/40 uppercase mb-2 text-center">Signature Preview:</span>
+                            <img src={formData.parent_signature} alt="Captured Signature" className="bg-white border border-slate-300 rounded shadow-sm mx-auto h-16 object-contain" />
+                        </div>
+                    )}
                     <p className="text-sm text-dark/50">{t.expect_msg}</p>
                     <div className="flex flex-col sm:flex-row gap-4 w-full justify-center max-w-lg">
                         <button
@@ -1048,10 +1062,10 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
     return (
         <div className="space-y-16">
             <div className="p-8 md:p-12 bg-gray-50 border border-slate-200 rounded-2xl mb-8">
-                <span className="text-xl font-bold text-dark mb-8 block">{t.review_info}</span>
+                <span className="text-xl font-bold text-dark mb-8 block">{t.apply_form.emergency_contact === "Noodkontak" ? "Hersien Inligting" : "Review Information"}</span>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.learner}</span>
+                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.apply_form.learner_details || "Learner Details"}</span>
                         <p className="text-base font-medium text-dark">{formData.learner_first_name} {formData.learner_surname}</p>
                     </div>
                     <div className="flex flex-col gap-1">
@@ -1059,16 +1073,16 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                         <p className="text-base font-medium text-dark">{formData.grade_applying_for} — {formData.intake_year}</p>
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.id_passport}</span>
+                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.apply_form.id_passport || "ID / Passport"}</span>
                         <p className="text-base font-medium text-dark">{formData.id_number}</p>
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.email}</span>
+                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.apply_form.email_address || "Email"}</span>
                         <p className="text-base font-medium text-dark">{formData.parent_primary_email}</p>
                     </div>
                     <div className="flex flex-col gap-1">
-                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.boarder.label}</span>
-                        <p className="text-base font-medium text-dark">{formData.is_boarder ? t.boarder.yes : t.boarder.no}</p>
+                        <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.apply_form.boarder || "Boarder"}</span>
+                        <p className="text-base font-medium text-dark">{formData.is_boarder ? (t.apply_form.emergency_contact === "Noodkontak" ? "Ja" : "Yes") : (t.apply_form.emergency_contact === "Noodkontak" ? "Nee" : "No")}</p>
                     </div>
                     <div className="flex flex-col gap-1">
                         <span className="text-xs font-semibold text-dark/50 uppercase tracking-wide">{t.apply_form.medical_aid_name}</span>
@@ -1083,13 +1097,7 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-12 mb-12">
                     <SignaturePad
-                        label={t.apply_form.student_signature_label}
-                        onSave={(sig) => updateFormData({ student_signature: sig })}
-                        onClear={() => updateFormData({ student_signature: '' })}
-                        t={t}
-                    />
-                    <SignaturePad
-                        label={t.apply_form.parent_signature_label}
+                        label={t.apply_form.parent_signature_label || "Parent / Guardian Signature"}
                         onSave={(sig) => updateFormData({ parent_signature: sig })}
                         onClear={() => updateFormData({ parent_signature: '' })}
                         t={t}
@@ -1140,7 +1148,7 @@ const ReviewStep = ({ referenceNumber, formData, updateFormData, isSubmitting, h
                     <ChevronLeft size={18} /> {t.back_button}
                 </button>
                 <button
-                    disabled={isSubmitting || !formData.popia_consent || !formData.declaration || !formData.student_signature || !formData.parent_signature}
+                    disabled={isSubmitting || !formData.popia_consent || !formData.declaration || !formData.parent_signature}
                     onClick={handleSubmit}
                     className="bg-primary text-white hover:bg-primary/90 py-4 px-8 rounded-full flex-[2] flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-medium shadow-sm group"
                 >
@@ -1252,7 +1260,7 @@ const Apply = () => {
             documents: [],
             popia_consent: false,
             declaration: false,
-            student_signature: '',
+
             parent_signature: ''
         };
     });
@@ -1263,8 +1271,8 @@ const Apply = () => {
     }, [formData]);
 
     useEffect(() => {
-        // We only persist the step if it's not the final success step
-        if (currentStep < 9 && !referenceNumber) {
+        // Persist the step to drafts until the final generation is complete
+        if (currentStep <= 9 && !referenceNumber) {
             sessionStorage.setItem('apply_current_step', currentStep.toString());
 
             // Sync to database draft for crash recovery
@@ -1311,15 +1319,16 @@ const Apply = () => {
     const handleSubmit = async () => {
         setIsSubmitting(true);
         try {
-            // Remove helper flags and sanitize empty values to null
-            const { popia_consent: _p, declaration: _d, ...rawSubmissionData } = formData;
+            // Cleanup helper flags and sanitize empty values to null
+            const { popia_consent: _p, declaration: _d, student_signature: _ss, ...rawSubmissionData } = formData;
 
             const submissionData = Object.keys(rawSubmissionData).reduce((acc, key) => {
                 const val = rawSubmissionData[key];
                 // Ensure critical string fields are not null to satisfy database constraints
                 const isRequiredStringField = [
                     'address_street', 'address_suburb', 'address_city', 'address_postal_code', 'address_province',
-                    'emergency_contact_name', 'emergency_contact_relationship', 'emergency_contact_number'
+                    'emergency_contact_name', 'emergency_contact_relationship', 'emergency_contact_number',
+                    'parent_signature'
                 ].includes(key);
 
                 if (isRequiredStringField) {

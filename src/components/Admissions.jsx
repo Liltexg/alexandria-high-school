@@ -61,7 +61,7 @@ const Admissions = () => {
             {/* Policy: Immersive Section */}
             <section className="section-padding">
                 <div className="container-wide">
-                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-32 items-center">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-center">
                         <motion.div
                             initial={{ opacity: 0, scale: 0.95 }}
                             whileInView={{ opacity: 1, scale: 1 }}
@@ -103,7 +103,11 @@ const Admissions = () => {
                                 <Link to="/apply" className="bg-primary text-white hover:bg-primary/90 font-medium rounded-full py-4 px-10 transition-all flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto">
                                     {t.admissions.apply_online} <ArrowRight size={18} />
                                 </Link>
-                                <span className="text-sm font-semibold text-dark/40 uppercase tracking-wider">{t.admissions.join_us}</span>
+                                <Link to="/track-application" className="border-2 border-dark text-dark hover:bg-dark hover:text-white font-medium rounded-full py-4 px-10 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
+                                    Track My Application
+                                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-widest bg-amber-400 text-amber-900 ml-1">Beta</span>
+                                    <ClipboardList size={18} />
+                                </Link>
                             </div>
                         </motion.div>
                     </div>
@@ -146,7 +150,7 @@ const Admissions = () => {
             {/* FAQ: Clean Layout */}
             <section className="section-padding bg-white">
                 <div className="container-wide">
-                    <div className="flex flex-col lg:flex-row gap-32">
+                    <div className="flex flex-col lg:flex-row gap-16 lg:gap-32">
                         <div className="lg:w-1/3">
                             <span className="text-primary font-semibold tracking-wider mb-4 block uppercase text-sm">{t.admissions.need_help}</span>
                             <h2 className="text-4xl md:text-4xl font-bold text-dark mb-8" dangerouslySetInnerHTML={{ __html: t.admissions.we_are_here }}>

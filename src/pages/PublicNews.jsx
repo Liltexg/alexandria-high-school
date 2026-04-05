@@ -11,13 +11,16 @@ const PublicNews = () => {
     const [selectedStory, setSelectedStory] = useState(null);
 
     useEffect(() => {
+        let isMounted = true;
         const fetchNews = async () => {
-            setLoading(true);
+            if (isMounted) setLoading(true);
             const { data, error } = await supabase
                 .from('news')
                 .select('*')
                 .eq('is_published', true)
                 .order('published_at', { ascending: false });
+
+            if (!isMounted) return;
 
             if (error) console.error('Error fetching news:', error);
             else setNews(data || []);
@@ -33,7 +36,10 @@ const PublicNews = () => {
             })
             .subscribe();
 
-        return () => supabase.removeChannel(channel);
+        return () => {
+            isMounted = false;
+            supabase.removeChannel(channel);
+        };
     }, []);
 
     return (
