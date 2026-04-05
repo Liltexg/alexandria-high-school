@@ -354,7 +354,7 @@ const Applications = () => {
                             transition={{ delay: 0.2 }}
                             className="text-2xl font-black text-[#003399] uppercase tracking-tighter"
                         >
-                            Oh... wait! iesh
+                            Oh... wait! Eish
                         </motion.h1>
                         <motion.p 
                             initial={{ opacity: 0, y: 10 }}
@@ -362,7 +362,7 @@ const Applications = () => {
                             transition={{ delay: 0.3 }}
                             className="text-slate-500 font-bold text-sm tracking-tight leading-relaxed"
                         >
-                            seems like u are on mobile. Unfortunety Applicaion panel is tooo big for mobile. please use destop
+                            Seems like you're on mobile. Unfortunately, the Application panel is just too big for phone screens. Please use a desktop for the full experience.
                         </motion.p>
                     </div>
 
