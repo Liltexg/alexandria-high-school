@@ -9,17 +9,19 @@ import schoolWall from '../assets/school_wall.jpg';
 import { supabase } from '../lib/supabaseClient';
 
 const Hero = () => {
-    const { t, lang } = useLanguage();
+    const { t, lang, settings } = useLanguage();
     const [currentSlide, setCurrentSlide] = useState(0);
     const [isEntered, setIsEntered] = useState(false);
 
     const defaultSlides = [
         {
             image: schoolWall,
-            tag: t.hero.admissions_tag,
+            tag: settings.admissions_phase === 'Open' ? t.hero.admissions_tag : `Admissions: ${settings.admissions_phase}`,
             title: t.hero.dignity,
             styledtitle: t.hero.first,
-            desc: t.hero.admissions_desc
+            desc: settings.admissions_phase === 'Open' 
+                ? t.hero.admissions_desc 
+                : `${t.hero.admissions_desc} (Current Phase: ${settings.admissions_phase} for ${settings.intake_year})`
         },
         {
             image: prefectCampImg,
@@ -36,6 +38,7 @@ const Hero = () => {
             desc: t.hero.staff_desc
         }
     ];
+
 
     const [customSlides, setCustomSlides] = useState([]);
     

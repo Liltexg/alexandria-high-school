@@ -16,7 +16,8 @@ import {
     FileText,
     CheckCircle,
     ChevronRight,
-    Lock
+    Lock,
+    School
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { generateApplicationPDF } from '../utils/generateApplicationPDF';
@@ -30,6 +31,16 @@ const SectionHeader = ({ text }) => (
   </div>
 );
 
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = React.useState(window.innerWidth < 768);
+    React.useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    return isMobile;
+};
+
 const DataBox = ({ label, value, icon: Icon }) => (
   <div className="border border-slate-100 p-6 bg-white hover:bg-[#8C1515]/5 transition-all group relative">
     <div className="flex items-center gap-4 mb-3">
@@ -41,6 +52,7 @@ const DataBox = ({ label, value, icon: Icon }) => (
 );
 
 const TrackApplication = () => {
+    const isMobile = useIsMobile();
     const [reference, setReference] = useState('');
     const [idNumber, setIdNumber] = useState('');
     const [application, setApplication] = useState(null);
@@ -78,11 +90,11 @@ const TrackApplication = () => {
 
     if (!application) {
         return (
-            <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center p-6 selection:bg-[#8C1515]/10">
+            <div className={`min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center ${isMobile ? 'p-0 pt-24' : 'p-6'} selection:bg-[#8C1515]/10`}>
                 <motion.div 
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="max-w-md w-full bg-white border-t-8 border-[#8C1515] shadow-2xl p-12 text-center"
+                    className={`bg-white shadow-2xl ${isMobile ? 'w-full min-h-screen p-8 pt-12 pb-12' : 'max-w-md w-full border-t-8 border-[#8C1515] p-12 text-center'}`}
                 >
                     <img src="/logo.png" alt="AHS Crest" className="h-20 mx-auto mb-10 grayscale" />
                     <h1 className="text-sm font-black text-[#D4AF37] uppercase tracking-[0.6em] mb-4">Alexandria High School</h1>
@@ -138,10 +150,10 @@ const TrackApplication = () => {
     }
 
     return (
-        <div className="min-h-screen bg-[#FAF9F6] py-12 md:py-24 px-4 selection:bg-[#8C1515]/10">
-            <div className="max-w-5xl mx-auto space-y-10">
+        <div className={`min-h-screen bg-[#FAF9F6] ${isMobile ? 'pt-24 pb-10 px-0' : 'py-12 md:py-24 px-4'} selection:bg-[#8C1515]/10`}>
+            <div className={`mx-auto space-y-6 md:space-y-10 ${isMobile ? 'w-full' : 'max-w-5xl'}`}>
                 {/* Official Brand Dashboard Header */}
-                <div className="bg-white border-x border-t-8 border-t-[#8C1515] border-slate-200 p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-12 shadow-sm">
+                <div className={`bg-white border-t-8 border-t-[#8C1515] shadow-sm flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12 ${isMobile ? 'p-8 border-x-0' : 'border-x border-slate-200 p-10 md:p-14'}`}>
                     <div className="flex flex-col md:flex-row items-center gap-10">
                         <div className="w-28 h-28 bg-[#020617] text-[#D4AF37] flex items-center justify-center text-5xl font-serif font-bold italic shadow-2xl border-4 border-white ring-1 ring-[#D4AF37]/30">
                             {application.learner_first_name[0]}{application.learner_surname[0]}

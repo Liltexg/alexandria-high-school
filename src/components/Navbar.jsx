@@ -46,7 +46,7 @@ const Navbar = () => {
             <header className={`fixed top-0 left-0 w-full z-[100] transition-all duration-[1200ms] ease-[cubic-bezier(0.19,1,0.22,1)] ${showSolidBg ? 'py-4' : 'py-8'
                 }`}>
                 {/* The Structural Glass Bar */}
-                <div className={`absolute inset-0 transition-all duration-1000 ${showSolidBg ? 'bg-dark/95 backdrop-blur-xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)] opacity-100' : 'opacity-0'
+                <div className={`absolute inset-0 transition-all duration-1000 ${showSolidBg ? (isApplyPage ? 'bg-dark/80 backdrop-blur-xl border-b border-white/5 shadow-lg' : 'bg-dark/95 backdrop-blur-xl border-b border-white/10 shadow-[0_10px_40px_rgba(0,0,0,0.5)]') : 'opacity-0'
                     }`} />
 
                 <div className="container-wide relative">

@@ -41,7 +41,7 @@ const AccordionItem = ({ title, content }) => {
 };
 
 const Admissions = () => {
-    const { lang, t } = useLanguage();
+    const { lang, t, settings } = useLanguage();
 
     const icons = [ClipboardList, FileText, UserCheck];
     const steps = t.admissions.steps.map((s, i) => ({
@@ -53,7 +53,7 @@ const Admissions = () => {
     return (
         <div className="bg-white">
             <PageHero
-                title={t.admissions.title}
+                title={`${t.admissions.title} ${settings.intake_year || '2027'}`}
                 subtitle={t.admissions.subtitle}
                 image={farewell2}
             />
@@ -83,7 +83,14 @@ const Admissions = () => {
                             whileInView={{ opacity: 1, x: 0 }}
                             viewport={{ once: true }}
                         >
-                            <span className="label-meta mb-4 block text-primary font-semibold tracking-wider">{t.admissions.our_approach}</span>
+                            <div className="flex items-center gap-3 mb-4">
+                                <span className="label-meta block text-primary font-semibold tracking-wider">{t.admissions.our_approach}</span>
+                                {settings.admissions_phase !== 'Open' && (
+                                    <span className="bg-amber-400 text-amber-900 text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter animate-pulse">
+                                        Phase: {settings.admissions_phase}
+                                    </span>
+                                )}
+                            </div>
                             <h2 className="text-4xl md:text-5xl font-bold text-dark mb-8" dangerouslySetInnerHTML={{ __html: t.admissions.quality_education }}>
                             </h2>
                             <p className="text-lg text-dark/70 leading-relaxed mb-10 max-w-xl">
@@ -100,8 +107,16 @@ const Admissions = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row items-center gap-6">
-                                <Link to="/apply" className="bg-primary text-white hover:bg-primary/90 font-medium rounded-full py-4 px-10 transition-all flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto">
-                                    {t.admissions.apply_online} <ArrowRight size={18} />
+                                <Link 
+                                    to="/apply" 
+                                    className={`font-medium rounded-full py-4 px-10 transition-all flex items-center justify-center gap-2 shadow-sm w-full sm:w-auto ${
+                                        settings.admissions_phase === 'Closed' 
+                                        ? 'bg-gray-200 text-gray-400 cursor-not-allowed pointer-events-none' 
+                                        : 'bg-primary text-white hover:bg-primary/90'
+                                    }`}
+                                >
+                                    {settings.admissions_phase === 'Closed' ? 'Portal Suspended' : t.admissions.apply_online}
+                                    <ArrowRight size={18} />
                                 </Link>
                                 <Link to="/track-application" className="border-2 border-dark text-dark hover:bg-dark hover:text-white font-medium rounded-full py-4 px-10 transition-all flex items-center justify-center gap-2 w-full sm:w-auto">
                                     Track My Application
@@ -109,6 +124,7 @@ const Admissions = () => {
                                     <ClipboardList size={18} />
                                 </Link>
                             </div>
+
                         </motion.div>
                     </div>
                 </div>

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { Loader2, Check, X, RefreshCw, PenTool, AlertTriangle, CheckCircle } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useLanguage } from '../context/LanguageContext';
 
 // --- Error Boundary Component ---
 class ErrorBoundary extends React.Component {
@@ -40,16 +41,27 @@ const AHS_BRAND = {
   gridBorder: '#cad1db' // Faint grey lines like the paper form
 };
 
-const FormGridCell = ({ label, value, onChange, placeholder, colSpan = "col-span-1", type = "text" }) => (
-    <div className={`border-b border-r border-black p-1 flex flex-col ${colSpan} transition-colors min-h-[40px] bg-white`}>
-        <label className="text-[7px] uppercase tracking-tighter leading-none mb-0.5 text-black font-bold">
+const useIsMobile = () => {
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
+    return isMobile;
+};
+
+const FormGridCell = ({ label, value, onChange, placeholder, colSpan = "col-span-12 md:col-span-1", type = "text" }) => (
+    <div className={`border-b border-black md:border-r p-2 md:p-1 flex flex-col ${colSpan} transition-colors min-h-[44px] md:min-h-[40px] bg-white`}>
+        <label className="text-[8px] md:text-[7px] uppercase tracking-tighter leading-none mb-1 md:mb-0.5 text-black font-bold">
             {label}
         </label>
         <input
             type={type}
             value={value}
             onChange={(e) => onChange(e.target.value)}
-            className="w-full text-xs font-bold text-slate-900 outline-none bg-transparent uppercase pb-0.5 h-full"
+            className="w-full text-sm md:text-xs font-bold text-slate-900 outline-none bg-transparent uppercase pb-0.5 h-full focus:bg-slate-50 transition-colors"
+            placeholder={placeholder}
         />
     </div>
 );
@@ -64,7 +76,21 @@ const FormBox = ({ label, checked, onClick }) => (
 );
 
 const IDBoxes = ({ value = "", onChange }) => {
+    const isMobile = useIsMobile();
     const boxes = Array(13).fill(null);
+    
+    if (isMobile) {
+        return (
+            <input
+                maxLength={13}
+                placeholder="0000000000000"
+                className="w-full h-10 px-2 text-lg font-mono font-bold tracking-[0.4em] outline-none bg-slate-50 focus:bg-white transition-all border border-slate-200"
+                value={value}
+                onChange={(e) => onChange(e.target.value.replace(/[^0-9]/g, '').slice(0, 13))}
+            />
+        );
+    }
+
     const handleChange = (index, char) => {
         const chars = value.split('');
         while(chars.length < 13) chars.push(' ');
@@ -73,7 +99,7 @@ const IDBoxes = ({ value = "", onChange }) => {
     };
 
     return (
-        <div className="flex gap-0 border-l border-black overflow-hidden scale-90 origin-left">
+        <div className="flex gap-0 border-l border-black overflow-hidden scale-90 md:scale-100 origin-left">
             {boxes.map((_, i) => (
                 <input
                     key={i}
@@ -88,7 +114,7 @@ const IDBoxes = ({ value = "", onChange }) => {
 };
 
 const SectionBar = ({ text }) => (
-    <div className="bg-[#020617] text-white py-1 px-4 mb-0 text-center font-black uppercase text-[10px] tracking-[0.2em] border-x border-t border-black">
+    <div className="bg-[#020617] text-white py-2 md:py-1 px-4 mb-0 text-center font-black uppercase text-[9px] md:text-[10px] tracking-[0.2em] border-x border-t border-black">
         {text}
     </div>
 );
@@ -139,7 +165,7 @@ const SignaturePad = ({ label, onSave, onClear }) => {
     return (
         <div className="flex flex-col gap-2">
             <p className="text-[7px] uppercase font-black text-slate-400">{label}</p>
-            <div className="relative border-b-2 border-black bg-white group h-24">
+            <div className="relative border-b-2 border-black bg-white group h-32 md:h-24">
                 <canvas
                     ref={canvasRef}
                     width={400}
@@ -220,9 +246,11 @@ const GuardianSection = ({ title, prefix, formData, updateField }) => {
 // --- Main Page ---
 
 const Apply = () => {
+    const isMobile = useIsMobile();
+    const { t, settings } = useLanguage();
     const [formData, setFormData] = useState({
         // Learner
-        intake_year: '2026',
+        intake_year: settings.intake_year || '2027',
         grade_applying_for: '',
         highest_grade_passed: '',
         year_passed: '',
@@ -502,29 +530,45 @@ const Apply = () => {
             </div>
         );
     }
-
     return (
-        <div className="min-h-screen bg-slate-100 py-12 px-2 selection:bg-[#8C1515]/10">
+        <div className={`min-h-screen bg-slate-100 ${isMobile ? 'pt-24 pb-10 px-0' : 'pt-40 pb-20 px-4'} selection:bg-[#8C1515]/10`}>
             <AdminNotification />
-            <div className="max-w-5xl mx-auto bg-white border border-slate-300 shadow-xl p-6 md:p-10 font-sans">
+            <div className={`mx-auto bg-white shadow-xl font-sans ${isMobile ? 'w-full' : 'max-w-5xl border border-slate-300 p-6 md:p-10'}`}>
                 
                 {/* --- SCHOOL IDENTITY HEADER --- */}
-                <div className="flex flex-col md:flex-row items-center justify-between mb-12 pb-8 border-b-2 border-[#8C1515]">
+                <div className={`flex flex-col md:flex-row items-center justify-between mb-8 md:mb-12 pb-8 border-b-2 border-[#8C1515] ${isMobile ? 'px-6 pt-4' : ''}`}>
                     <div className="flex items-center gap-6">
-                        <img src="/logo.png" alt="AHS Crest" className="h-24 grayscale" />
+                        <img src="/logo.png" alt="AHS Crest" className="h-20 md:h-24 grayscale" />
                         <div className="h-20 w-px bg-slate-200 hidden md:block" />
                         <div>
-                            <h1 className="text-2xl md:text-3xl font-black text-[#020617] tracking-tighter uppercase leading-none">Alexandria High School</h1>
-                            <p className="text-[10px] font-bold text-[#8C1515] uppercase tracking-[0.4em] mt-2">Official Admissions Portal &bull; 2026</p>
+                            <h1 className="text-xl md:text-3xl font-black text-[#020617] tracking-tighter uppercase leading-none text-center md:text-left mt-4 md:mt-0">Alexandria High School</h1>
+                            <div className="flex items-center gap-3 mt-2 justify-center md:justify-start">
+                                <p className="text-[10px] font-bold text-[#8C1515] uppercase tracking-[0.4em]">Official Admissions Portal &bull; {settings.intake_year || '2027'}</p>
+                                {settings.admissions_phase !== 'Open' && (
+                                    <span className="bg-[#D4AF37] text-white text-[8px] font-black px-2 py-0.5 uppercase tracking-widest animate-pulse">
+                                        {settings.admissions_phase}
+                                    </span>
+                                )}
+                            </div>
                         </div>
                     </div>
-                    <div className="text-right mt-6 md:mt-0">
-                        <h2 className="text-lg md:text-xl font-serif font-bold italic text-slate-400">Application for Admission</h2>
+                    <div className="text-center md:text-right mt-6 md:mt-0">
+                        <h2 className="text-lg md:text-xl font-serif font-bold italic text-slate-400 leading-tight">Application for Admission</h2>
                         <div className="text-[9px] font-black uppercase tracking-widest text-[#D4AF37] mt-1">Official Digital Document / Amptelike Digitale Dokument</div>
                     </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-0 text-black">
+                    {settings.admissions_phase === 'Closed' ? (
+                        <div className={`py-20 text-center border-2 border-dashed border-slate-200 ${isMobile ? 'mx-4 my-8' : ''}`}>
+                            <AlertTriangle size={48} className="mx-auto text-[#8C1515] mb-6 opacity-20" />
+                            <h2 className="text-2xl font-black uppercase tracking-tighter text-slate-800 mb-2">Admissions Suspended / Toelatings Opgeskort</h2>
+                            <p className="text-sm font-bold text-slate-400 uppercase tracking-widest max-w-md mx-auto leading-relaxed px-6">
+                                The online application portal for {settings.intake_year} is currently closed. Please contact the school office for assistance.
+                            </p>
+                        </div>
+                    ) : (
+                        <div className={isMobile ? 'border-t border-black' : ''}>
                     {/* --- ADMISSION DETAILS --- */}
                     <SectionBar text="ADMISSION DETAILS / TOELATINGSBESONDERHEDE:" />
                     <div className="grid grid-cols-12 border-l border-t border-black">
@@ -752,8 +796,9 @@ const Apply = () => {
                             )}
                         </button>
                     </div>
-
-                </form>
+                </div>
+            )}
+        </form>
             </div>
         </div>
     );
