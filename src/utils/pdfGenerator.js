@@ -12,7 +12,7 @@ const generatePDF = (app) => {
     doc.setTextColor(255, 255, 255);
     doc.setFontSize(22);
     doc.setFont('helvetica', 'bold');
-    doc.text('ALEXANDRIA HIGH SCHOOL', pageWidth / 2, 15, { align: 'center' });
+    doc.text('Alexandria High School', pageWidth / 2, 15, { align: 'center' });
 
     doc.setFontSize(10);
     doc.setFont('helvetica', 'normal');

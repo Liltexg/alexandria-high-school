@@ -23,7 +23,7 @@ create table public.notices (
 );
 
 -- 3. NEWS TABLE
--- Permanent content: Institutional record, curated
+-- Permanent content: Official record, curated
 create table public.news (
   id uuid primary key default gen_random_uuid(),
   title varchar(120) not null,

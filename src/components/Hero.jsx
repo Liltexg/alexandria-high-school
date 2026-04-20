@@ -39,7 +39,7 @@ const Hero = () => {
 
     const [customSlides, setCustomSlides] = useState([]);
     
-    // Institutional Intelligence: All Active Slides (Defaults + Custom Office Posts)
+    // System Intelligence: All Active Slides (Defaults + Custom Office Posts)
     const allSlides = useMemo(() => {
         return [...defaultSlides, ...customSlides];
     }, [defaultSlides, customSlides]);

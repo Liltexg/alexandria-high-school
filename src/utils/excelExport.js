@@ -9,7 +9,7 @@ export const exportApplicationsToExcel = async (applications) => {
     // 1. Branding Layout Setup
     worksheet.mergeCells('A1:L1');
     const titleCell = worksheet.getCell('A1');
-    titleCell.value = 'ALEXANDRIA HIGH SCHOOL - OFFICIAL ADMISSION REGISTRY';
+    titleCell.value = 'Alexandria High School - OFFICIAL ADMISSION REGISTRY';
     titleCell.font = { name: 'Arial Black', size: 18, color: { argb: 'FF003366' } };
     titleCell.alignment = { vertical: 'middle', horizontal: 'center' };
 

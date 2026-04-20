@@ -1,362 +1,263 @@
 import React, { useState } from 'react';
 import { supabase } from '../lib/supabaseClient';
+import { 
+    Download, 
+    ShieldCheck, 
+    MessageSquare, 
+    RefreshCw, 
+    X, 
+    Activity,
+    Search,
+    User,
+    Mail,
+    Phone,
+    Calendar,
+    MapPin,
+    FileText,
+    CheckCircle,
+    ChevronRight,
+    Lock
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, FileText, ChevronRight, AlertCircle, Edit, Save, X, Download, ShieldCheck, Activity, ClipboardList, MessageSquare, RefreshCw } from 'lucide-react';
-import PageHero from '../components/PageHero';
-import { useLanguage } from '../context/LanguageContext';
 import { generateApplicationPDF } from '../utils/generateApplicationPDF';
 
+const SectionHeader = ({ text }) => (
+  <div className="bg-[#8C1515] border-y-2 border-[#D4AF37]/30 py-3 px-6 mb-8 mt-12 first:mt-0 shadow-sm relative overflow-hidden">
+    <div className="absolute left-0 top-0 w-1 h-full bg-[#D4AF37]" />
+    <h3 className="text-[12px] font-black uppercase tracking-[0.25em] text-center text-white italic">
+      {text}
+    </h3>
+  </div>
+);
+
+const DataBox = ({ label, value, icon: Icon }) => (
+  <div className="border border-slate-100 p-6 bg-white hover:bg-[#8C1515]/5 transition-all group relative">
+    <div className="flex items-center gap-4 mb-3">
+      <div className="text-slate-200 group-hover:text-[#D4AF37] transition-colors"><Icon size={16} /></div>
+      <p className="text-[10px] font-black text-slate-300 uppercase tracking-widest leading-tight group-hover:text-[#8C1515] transition-colors">{label}</p>
+    </div>
+    <p className="text-base font-bold text-slate-900 truncate uppercase tracking-tight">{value || 'N/A'}</p>
+  </div>
+);
+
 const TrackApplication = () => {
-    const { t } = useLanguage();
-    const [creds, setCreds] = useState({ ref: '', id: '' });
+    const [reference, setReference] = useState('');
+    const [idNumber, setIdNumber] = useState('');
     const [application, setApplication] = useState(null);
     const [comms, setComms] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
-    const [editedData, setEditedData] = useState(null);
-    const [saving, setSaving] = useState(false);
-    const [activeTab, setActiveTab] = useState('status');
-
-    const STATUS_STEPS = [
-        { key: 'pending', label: 'Submitted', desc: 'Application received' },
-        { key: 'reviewing', label: 'Under Review', desc: 'Academic panel review' },
-        { key: 'interview', label: 'Interview', desc: 'Parent/Learner meeting' },
-        { key: 'finalizing', label: 'Finalizing', desc: 'Final documentation' },
-        { key: 'approved', label: 'Accepted', desc: 'Admission granted' }
-    ];
-
-    const getStatusIndex = (status) => {
-        const s = status?.toLowerCase();
-        if (s === 'approved') return 4;
-        if (s === 'declined') return 4;
-        if (s === 'pending') return 0;
-        return 1;
-    };
 
     const handleSearch = async (e) => {
         e.preventDefault();
-        if (!creds.ref || !creds.id) return;
-
         setLoading(true);
-        setError(null);
-
         try {
-            const { data, error: rpcError } = await supabase
+            const { data, error } = await supabase
                 .from('applications')
                 .select('*')
-                .eq('reference_number', creds.ref.trim())
-                .eq('id_number', creds.id.trim())
-                .limit(1);
+                .eq('reference_number', reference.trim())
+                .eq('id_number', idNumber.trim());
 
-            if (rpcError || !data || data.length === 0) {
-                throw new Error('No match found. Please verify both Reference and ID Number.');
+            if (error) throw error;
+            if (data && data.length > 0) {
+                setApplication(data[0]);
+                const { data: commsData } = await supabase
+                    .from('application_comms')
+                    .select('*')
+                    .eq('application_id', data[0].id)
+                    .order('created_at', { ascending: false });
+                setComms(commsData || []);
+            } else {
+                alert('Academic record mismatch. Verify Reference and ID.');
             }
-            
-            setApplication(data[0]);
-            setEditedData(data[0]);
-
-            const { data: commsData } = await supabase
-                .from('application_comms')
-                .select('*')
-                .eq('application_id', data[0].id)
-                .order('created_at', { ascending: false });
-            
-            setComms(commsData || []);
         } catch (err) {
-            setError(err.message);
+            alert('System Interruption: ' + err.message);
         } finally {
             setLoading(false);
         }
     };
 
-    const handleSave = async () => {
-        setSaving(true);
-        try {
-            const { error: updateError } = await supabase
-                .from('applications')
-                .update(editedData)
-                .eq('id', application.id);
-
-            if (updateError) throw updateError;
-            
-            setApplication(editedData);
-            setIsEditing(false);
-            alert('Application updated successfully.');
-        } catch (err) (err) {
-            alert('Failed to update: ' + err.message);
-        } finally {
-            setSaving(false);
-        }
-    };
-
-    const renderField = (label, value, key, type = "text") => {
-        if (isEditing) {
-            return (
-                <div className="flex flex-col gap-2 p-6 bg-white border-2 border-slate-100 rounded-2xl shadow-sm transition-all focus-within:border-primary">
-                    <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 italic">{label}</label>
-                    <input 
-                        type={type}
-                        value={editedData[key] || ''}
-                        onChange={(e) => setEditedData({...editedData, [key]: e.target.value})}
-                        className="text-lg font-bold text-dark outline-none w-full bg-transparent"
-                    />
-                </div>
-            )
-        }
+    if (!application) {
         return (
-            <div className="flex flex-col gap-2 p-6 bg-white border border-slate-100 rounded-2xl group hover:border-primary/20 transition-all">
-                <span className="text-[10px] font-black uppercase tracking-widest text-slate-300 group-hover:text-primary transition-colors">{label}</span>
-                <span className="text-lg font-bold text-dark tracking-tight">{value || '---'}</span>
+            <div className="min-h-screen bg-[#FAF9F6] flex flex-col items-center justify-center p-6 selection:bg-[#8C1515]/10">
+                <motion.div 
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="max-w-md w-full bg-white border-t-8 border-[#8C1515] shadow-2xl p-12 text-center"
+                >
+                    <img src="/logo.png" alt="AHS Crest" className="h-20 mx-auto mb-10 grayscale" />
+                    <h1 className="text-sm font-black text-[#D4AF37] uppercase tracking-[0.6em] mb-4">Alexandria High School</h1>
+                    <h2 className="text-3xl font-serif font-bold text-slate-900 italic tracking-tight mb-12">Official Tracker</h2>
+                    
+                    <form onSubmit={handleSearch} className="space-y-8 text-left">
+                        <div className="space-y-6">
+                            <div className="border border-slate-100 p-5 focus-within:ring-1 focus-within:ring-[#8C1515] transition-all">
+                                <label className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2 block">Reference / Verwysingsnommer</label>
+                                <div className="flex items-center gap-3">
+                                    <Lock size={16} className="text-slate-200" />
+                                    <input
+                                        type="text"
+                                        placeholder="ALX-2026-XXXXX"
+                                        value={reference}
+                                        onChange={(e) => setReference(e.target.value)}
+                                        className="w-full text-base font-bold text-slate-900 outline-none uppercase placeholder:text-slate-100"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="border border-slate-100 p-5 focus-within:ring-1 focus-within:ring-[#8C1515] transition-all">
+                                <label className="text-[10px] font-black text-slate-300 uppercase tracking-widest mb-2 block">Official Learner ID</label>
+                                <div className="flex items-center gap-3">
+                                    <User size={16} className="text-slate-200" />
+                                    <input
+                                        type="text"
+                                        placeholder="ID NUMBER"
+                                        value={idNumber}
+                                        onChange={(e) => setIdNumber(e.target.value)}
+                                        className="w-full text-base font-bold text-slate-900 outline-none uppercase placeholder:text-slate-100"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                        </div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-[#8C1515] text-white h-20 rounded-full font-black uppercase text-[11px] tracking-[0.4em] shadow-xl hover:bg-black hover:scale-[1.02] transition-all flex items-center justify-center gap-4 group"
+                        >
+                            {loading ? <RefreshCw size={24} className="animate-spin" /> : (
+                                <>
+                                    Access Record
+                                    <ChevronRight size={18} className="text-[#D4AF37] group-hover:translate-x-2 transition-transform" />
+                                </>
+                            )}
+                        </button>
+                    </form>
+                </motion.div>
             </div>
-        )
-    };
+        );
+    }
 
     return (
-        <div className="bg-white min-h-screen font-body">
-            <PageHero title="The Vault" subtitle="Institutional Admissions Portal" image="/school_wall.jpg" />
-
-            <main className="section-padding pt-48 pb-32">
-                <div className="container-wide max-w-5xl mx-auto">
-                    
-                    {!application ? (
-                        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="max-w-2xl mx-auto bg-dark p-12 rounded-[3.5rem] border border-white/10 shadow-[0_40px_80px_rgba(0,0,0,0.3)] relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-64 h-64 bg-primary opacity-10 blur-[100px] -mr-32 -mt-32" />
-                            
-                            <div className="flex items-center gap-4 mb-10 text-emerald-400">
-                                <Lock size={20} />
-                                <span className="text-[10px] font-black uppercase tracking-[0.4em]">Biometric Access Required</span>
-                            </div>
-                            
-                            <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Identity Verification.</h2>
-                            <p className="text-white/40 text-sm mb-12 leading-relaxed max-w-md">Access your institutional records via the secure Alexandria mainframe.</p>
-                            
-                            <form onSubmit={handleSearch} className="space-y-8">
-                                <div className="space-y-6">
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/40 uppercase ml-1 tracking-widest">Reference Protocol</label>
-                                        <input 
-                                            type="text" required placeholder="ALX-2026-XXXXXX"
-                                            value={creds.ref} onChange={e => setCreds({...creds, ref: e.target.value})}
-                                            className="w-full h-18 px-8 bg-white/5 border-2 border-white/10 rounded-2xl text-xl font-bold text-white outline-none focus:border-primary focus:bg-white/10 transition-all placeholder:text-white/10"
-                                        />
-                                    </div>
-                                    <div className="space-y-3">
-                                        <label className="text-[10px] font-black text-white/40 uppercase ml-1 tracking-widest">Identification Sequence</label>
-                                        <input 
-                                            type="password" required placeholder="13-Digit ID"
-                                            value={creds.id} onChange={e => setCreds({...creds, id: e.target.value})}
-                                            className="w-full h-18 px-8 bg-white/5 border-2 border-white/10 rounded-2xl text-xl font-bold text-white outline-none focus:border-primary focus:bg-white/10 transition-all placeholder:text-white/10 tracking-[0.5em]"
-                                        />
-                                    </div>
-                                </div>
-                                
-                                {error && (
-                                    <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} className="bg-rose-500/10 p-4 rounded-xl border border-rose-500/20 flex items-center gap-3 text-rose-400 text-sm font-bold">
-                                        <AlertCircle size={18}/> {error}
-                                    </motion.div>
-                                )}
-                                
-                                <button type="submit" disabled={loading} className="w-full h-18 bg-primary text-white rounded-2xl font-black uppercase tracking-[0.3em] hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(0,85,204,0.3)]">
-                                    {loading ? <><RefreshCw size={24} className="animate-spin" /> Verifying...</> : <><ShieldCheck size={24} /> Initialize Access</>}
-                                </button>
-                            </form>
-                        </motion.div>
-                    ) : (
-                        <div className="space-y-12">
-                            {/* Profile Header */}
-                            <div className="flex flex-col md:flex-row items-center gap-10 p-12 bg-dark rounded-[3.5rem] text-white shadow-2xl relative overflow-hidden">
-                                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-emerald-400 to-primary" />
-                                
-                                <div className="w-40 h-40 rounded-[2.5rem] bg-white/5 border-4 border-white/10 flex items-center justify-center relative group">
-                                    <span className="text-5xl font-black text-white/10 group-hover:text-primary transition-colors">
-                                        {application.learner_first_name[0]}{application.learner_surname[0]}
-                                    </span>
-                                    <div className="absolute inset-0 rounded-[2.5rem] bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-
-                                <div className="flex-1 text-center md:text-left">
-                                    <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 mb-4">
-                                        <span className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${
-                                            application.status?.toLowerCase() === 'approved' ? 'bg-emerald-500/20 border-emerald-500 text-emerald-400' :
-                                            application.status?.toLowerCase() === 'declined' ? 'bg-rose-500/20 border-rose-500 text-rose-400' :
-                                            'bg-primary/20 border-primary text-primary'
-                                        }`}>
-                                            {application.status}
-                                        </span>
-                                        <span className="text-white/40 text-[10px] font-black uppercase tracking-widest">
-                                            Ref: {application.reference_number}
-                                        </span>
-                                    </div>
-                                    <h2 className="text-5xl font-bold mb-2 tracking-tight">
-                                        {application.learner_first_name} <span className="text-primary">{application.learner_surname}</span>
-                                    </h2>
-                                    <p className="text-white/40 font-bold uppercase tracking-[0.2em] text-xs underline underline-offset-8 decoration-primary/30">Admissions Node v1.0.4</p>
-                                </div>
-
-                                <div className="flex flex-col gap-3 shrink-0 w-full md:w-auto">
-                                    <button onClick={() => generateApplicationPDF(application, application.reference_number)} className="h-14 bg-white/5 hover:bg-white/10 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 border border-white/10 transition-all">
-                                        <Download size={18} /> Download Dossier
-                                    </button>
-                                    <button onClick={() => setApplication(null)} className="h-14 hover:bg-rose-500/10 px-8 rounded-2xl font-black uppercase tracking-widest text-[10px] flex items-center justify-center gap-3 border border-transparent hover:border-rose-500/20 text-white/30 hover:text-rose-400 transition-all">
-                                        <X size={18} /> Terminate Session
-                                    </button>
-                                </div>
-                            </div>
-
-                            {/* Navigation Tabs */}
-                            <div className="flex justify-center gap-4 border-b-2 border-slate-100 pb-4">
-                                {[
-                                    { id: 'status', label: 'Timeline', icon: Activity },
-                                    { id: 'details', label: 'Archive Data', icon: ClipboardList },
-                                    { id: 'comms', label: 'Transmission Logs', icon: MessageSquare }
-                                ].map(tab => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id)}
-                                        className={`flex items-center gap-3 px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all ${
-                                            activeTab === tab.id ? 'bg-dark text-white shadow-xl' : 'text-slate-400 hover:text-dark hover:bg-slate-50'
-                                        }`}
-                                    >
-                                        <tab.icon size={18} /> {tab.label}
-                                    </button>
-                                ))}
-                            </div>
-
-                            <AnimatePresence mode="wait">
-                                {activeTab === 'status' && (
-                                    <motion.div key="status" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="bg-slate-50 p-12 rounded-[3.5rem] border border-slate-100">
-                                        <div className="flex justify-between items-start mb-16 px-4">
-                                            {STATUS_STEPS.map((step, idx) => {
-                                                const currentIdx = getStatusIndex(application.status);
-                                                const isCompleted = idx < currentIdx || application.status?.toLowerCase() === 'approved';
-                                                const isActive = idx === currentIdx && application.status?.toLowerCase() !== 'approved';
-                                                
-                                                return (
-                                                    <div key={idx} className="flex-1 relative last:flex-none">
-                                                        <div className="flex flex-col items-center text-center gap-4">
-                                                            <div className={`w-14 h-14 rounded-2xl border-4 flex items-center justify-center transition-all ${
-                                                                isCompleted ? 'bg-emerald-500 border-emerald-100 text-white shadow-lg shadow-emerald-200' :
-                                                                isActive ? 'bg-primary border-primary/20 text-white shadow-lg shadow-primary/20' :
-                                                                'bg-white border-slate-200 text-slate-300'
-                                                            }`}>
-                                                                {isCompleted ? <ShieldCheck size={24} /> : idx + 1}
-                                                            </div>
-                                                            <div className="space-y-1">
-                                                                <h4 className={`text-sm font-black uppercase tracking-widest ${isActive || isCompleted ? 'text-dark' : 'text-slate-400'}`}>
-                                                                    {step.label}
-                                                                </h4>
-                                                                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-tighter">{step.desc}</p>
-                                                            </div>
-                                                        </div>
-                                                        {idx < STATUS_STEPS.length - 1 && (
-                                                            <div className="absolute top-7 left-[calc(50%+28px)] right-[calc(-50%+28px)] h-1 bg-slate-200">
-                                                                <div className={`h-full transition-all duration-1000 ${isCompleted ? 'w-full bg-emerald-500' : 'w-0'}`} />
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                );
-                                            })}
-                                        </div>
-
-                                        <div className="bg-white p-10 rounded-3xl border border-slate-200 shadow-inner">
-                                            <div className="flex items-center gap-4 mb-6">
-                                                <AlertCircle className="text-primary" size={24} />
-                                                <h3 className="text-xl font-bold text-dark uppercase tracking-tight">Institutional Update</h3>
-                                            </div>
-                                            <p className="text-slate-500 font-bold leading-relaxed italic text-lg text-center md:text-left">
-                                                {application.status?.toLowerCase() === 'approved' ? 
-                                                    "Congratulations. Your application has been successfully processed and accepted into Alexandria High School. Welcome to the legacy." :
-                                                    application.status?.toLowerCase() === 'declined' ?
-                                                    "We regret to inform you that your application has been unsuccessful at this time. We wish you the best in your academic journey." :
-                                                    "Your application is currently being evaluated by the Academic Admissions Board. No further action is required at this time."
-                                                }
-                                            </p>
-                                        </div>
-                                    </motion.div>
-                                )}
-
-                                {activeTab === 'details' && (
-                                    <motion.div key="details" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-10">
-                                        <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-                                            <div className="space-y-6">
-                                                <h3 className="text-[11px] font-black text-dark/40 uppercase tracking-[0.4em] ml-2">Learner Core Archive</h3>
-                                                <div className="space-y-4">
-                                                    {renderField("Full Names", application.learner_first_name, "learner_first_name")}
-                                                    {renderField("Surname", application.learner_surname, "learner_surname")}
-                                                    {renderField("Identification", application.id_number, "id_number")}
-                                                    {renderField("Gender Node", application.gender, "gender")}
-                                                    {renderField("Academic Grade", application.grade_applying_for, "grade_applying_for")}
-                                                </div>
-                                            </div>
-                                            <div className="space-y-6">
-                                                <h3 className="text-[11px] font-black text-dark/40 uppercase tracking-[0.4em] ml-2">Guardian Connectivity</h3>
-                                                <div className="space-y-4">
-                                                    {renderField("Primary Liaison", application.parent_primary_name, "parent_primary_name")}
-                                                    {renderField("Digital Address", application.parent_primary_email, "parent_primary_email")}
-                                                    {renderField("Voice Comm Link", application.parent_primary_contact, "parent_primary_contact")}
-                                                    {renderField("Liaison Surname", application.parent_primary_surname, "parent_primary_surname")}
-                                                </div>
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 flex flex-col md:flex-row items-center justify-between gap-8">
-                                            <div className="flex items-center gap-6">
-                                                <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center shadow-lg border border-slate-200">
-                                                    <Edit className="text-primary" size={24} />
-                                                </div>
-                                                <div className="text-center md:text-left">
-                                                    <h4 className="text-lg font-bold text-dark">Data Correction Required?</h4>
-                                                    <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">Toggle edit mode to refine your archive.</p>
-                                                </div>
-                                            </div>
-                                            <button onClick={() => setIsEditing(!isEditing)} className={`px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-[11px] transition-all w-full md:w-auto ${
-                                                isEditing ? 'bg-primary text-white shadow-primary/20' : 'bg-white text-dark shadow-xl hover:bg-slate-50'
-                                            }`}>
-                                                {isEditing ? 'Exit Edit Protocol' : 'Initialize Correction'}
-                                            </button>
-                                        </div>
-
-                                        {isEditing && (
-                                            <motion.button initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} onClick={handleSave} disabled={saving} className="w-full h-18 bg-emerald-600 text-white rounded-[2rem] font-black uppercase tracking-[0.3em] hover:bg-emerald-700 transition-all flex items-center justify-center gap-4 shadow-2xl">
-                                                <Save size={24} /> {saving ? 'Syncing Archive...' : 'Confirm System Update'}
-                                            </motion.button>
-                                        )}
-                                    </motion.div>
-                                )}
-
-                                {activeTab === 'comms' && (
-                                    <motion.div key="comms" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="space-y-8">
-                                        {comms.length === 0 ? (
-                                            <div className="text-center py-24 bg-slate-50 rounded-[3.5rem] border border-dashed border-slate-200">
-                                                <MessageSquare size={48} className="mx-auto text-slate-200 mb-6" />
-                                                <p className="text-slate-400 font-black uppercase tracking-widest text-xs">No transmission logs detected.</p>
-                                            </div>
-                                        ) : (
-                                            <div className="space-y-6">
-                                                {comms.map((log, idx) => (
-                                                    <div key={idx} className="bg-white p-10 rounded-[2.5rem] border border-slate-200 shadow-xl flex gap-8 items-start hover:border-primary/20 transition-all">
-                                                        <div className="w-16 h-16 rounded-2xl bg-primary/5 flex items-center justify-center shrink-0 border border-primary/10">
-                                                            <Activity size={24} className="text-primary" />
-                                                        </div>
-                                                        <div className="space-y-3 flex-1">
-                                                            <div className="flex flex-wrap items-center justify-between gap-4">
-                                                                <span className="text-[10px] font-black text-primary uppercase tracking-[0.4em] italic">{log.type || 'SYSTEM'} TRANSMISSION</span>
-                                                                <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{new Date(log.created_at).toLocaleString()}</span>
-                                                            </div>
-                                                            <p className="text-lg text-slate-600 font-bold leading-relaxed">{log.content}</p>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
+        <div className="min-h-screen bg-[#FAF9F6] py-12 md:py-24 px-4 selection:bg-[#8C1515]/10">
+            <div className="max-w-5xl mx-auto space-y-10">
+                {/* Official Brand Dashboard Header */}
+                <div className="bg-white border-x border-t-8 border-t-[#8C1515] border-slate-200 p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-12 shadow-sm">
+                    <div className="flex flex-col md:flex-row items-center gap-10">
+                        <div className="w-28 h-28 bg-[#020617] text-[#D4AF37] flex items-center justify-center text-5xl font-serif font-bold italic shadow-2xl border-4 border-white ring-1 ring-[#D4AF37]/30">
+                            {application.learner_first_name[0]}{application.learner_surname[0]}
                         </div>
-                    )}
+                        <div className="text-center md:text-left space-y-3">
+                            <span className="text-[11px] font-black text-[#8C1515] tracking-[0.5em] uppercase">Academic Profile</span>
+                            <h1 className="text-4xl md:text-5xl font-serif font-bold italic text-slate-900 tracking-tight">
+                                {application.learner_first_name} <span className="text-slate-500">{application.learner_surname}</span>
+                            </h1>
+                            <div className="flex flex-wrap justify-center md:justify-start gap-6 items-center text-slate-400">
+                                <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                    <ShieldCheck size={14} className="text-[#D4AF37]" /> Authenticated
+                                </span>
+                                <span className="text-[10px] font-black uppercase tracking-widest flex items-center gap-2">
+                                    <Activity size={14} className="text-[#8C1515]" /> GRADE {application.grade_applying_for}
+                                </span>
+                                <div className="px-4 py-1 bg-slate-100 text-[9px] font-black text-slate-500 uppercase tracking-widest border border-slate-200">
+                                    REF: {application.reference_number}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className="flex gap-4">
+                        <button 
+                            onClick={() => generateApplicationPDF(application, application.reference_number)}
+                            className="bg-[#8C1515] text-white px-10 py-4 font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-black transition-all flex items-center gap-3"
+                        >
+                            <Download size={16} /> PDF Dossier
+                        </button>
+                        <button onClick={() => setApplication(null)} className="p-4 bg-white border border-slate-200 text-slate-400 hover:text-[#8C1515] transition-colors"><X size={24} /></button>
+                    </div>
                 </div>
-            </main>
+
+                <div className="bg-white border border-slate-200 shadow-2xl p-10 md:p-20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 w-96 h-96 bg-[#8C1515]/5 rounded-bl-full -z-10" />
+
+                    {/* DYNAMIC STATUS PULSE */}
+                    <SectionHeader text="Official Enrolment Pulse / Status" />
+                    <div className={`p-12 border-2 flex flex-col md:flex-row items-center gap-12 mb-16 relative overflow-hidden ${
+                        ['Accepted', 'Approved'].includes(application.status) ? 'bg-emerald-50/20 border-emerald-100' :
+                        ['Rejected', 'Declined'].includes(application.status) ? 'bg-rose-50/20 border-rose-100' : 'bg-[#FAF9F6] border-slate-100'
+                    }`}>
+                        <div className={`w-20 h-20 rounded-full flex items-center justify-center shadow-2xl ${
+                            ['Accepted', 'Approved'].includes(application.status) ? 'bg-emerald-700 text-white' :
+                            ['Rejected', 'Declined'].includes(application.status) ? 'bg-rose-700 text-white' :
+                            'bg-[#8C1515] text-white'
+                        }`}>
+                            {['Accepted', 'Approved'].includes(application.status) ? <CheckCircle size={40} /> :
+                             ['Rejected', 'Declined'].includes(application.status) ? <X size={40} /> :
+                             <Activity size={40} className="animate-pulse" />}
+                        </div>
+                        <div className="text-center md:text-left flex-1">
+                            <div className="flex items-center justify-center md:justify-start gap-4 mb-2">
+                                <span className="text-[10px] font-black text-[#D4AF37] uppercase tracking-[0.4em]">Official Decision</span>
+                                <div className="h-[1px] w-8 bg-slate-200" />
+                            </div>
+                            <h3 className="text-4xl font-serif font-bold italic text-slate-900 tracking-tight uppercase">{application.status || 'Processing'}</h3>
+                            <p className="text-slate-500 text-base mt-3 font-medium italic leading-relaxed max-w-2xl">
+                                {['Accepted', 'Approved'].includes(application.status) ? 'Accession formalized. The scholar has been successfully admitted to the Alexandria High School conservatory.' :
+                                 ['Rejected', 'Declined'].includes(application.status) ? 'Review complete. We are unable to proceed with formal enrolment at this academic junction.' :
+                                 'Administrative evaluation in progress. Credentials are undergoing rigorous academic review.'}
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* BRANDED DATA GRID */}
+                    <SectionHeader text="Academic Record / Leerderbesonderhede" />
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 border-l border-t border-slate-100">
+                        <DataBox label="Legal First Names" value={application.learner_first_name} icon={User} />
+                        <DataBox label="Academy Surname" value={application.learner_surname} icon={User} />
+                        <DataBox label="Identity Ref" value={application.id_number} icon={ShieldCheck} />
+                        <DataBox label="Programme Cycle" value={application.grade_applying_for} icon={School} />
+                        <DataBox label="Primary Language" value={application.home_language} icon={MessageSquare} />
+                        <DataBox label="Cycle Date" value={application.date_of_birth} icon={Calendar} />
+                    </div>
+
+                    {/* REFINED COMMS LOG */}
+                    <SectionHeader text="Official Correspondence / Korrespondensie" />
+                    <div className="space-y-6">
+                        {comms.length === 0 ? (
+                            <div className="py-24 text-center border-2 border-dashed border-slate-100 rounded-3xl bg-[#FAF9F6]">
+                                <MessageSquare size={40} className="mx-auto text-slate-100 mb-6" />
+                                <p className="text-[11px] font-black text-slate-300 uppercase tracking-[0.5em]">No transmissions from the committee</p>
+                            </div>
+                        ) : (
+                            comms.map((log, idx) => (
+                                <div key={idx} className="p-8 bg-white border border-slate-100 shadow-sm hover:shadow-xl transition-all flex gap-8 items-start border-l-8 border-l-[#8C1515] group">
+                                    <div className="w-14 h-14 bg-[#020617] text-[#D4AF37] flex items-center justify-center shrink-0 shadow-2xl group-hover:scale-110 transition-transform">
+                                        <Mail size={24} />
+                                    </div>
+                                    <div className="space-y-4">
+                                        <div className="flex items-center gap-6">
+                                            <span className="text-[10px] font-black text-[#8C1515] uppercase tracking-[0.4em]">Formal {log.method} Transmission</span>
+                                            <div className="h-1 w-1 bg-slate-200 rounded-full" />
+                                            <span className="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{new Date(log.created_at).toLocaleDateString()}</span>
+                                        </div>
+                                        <p className="text-xl font-medium text-slate-700 italic leading-relaxed group-hover:text-slate-900 transition-colors">"{log.note}"</p>
+                                    </div>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {/* AHS System Footer */}
+                    <div className="mt-32 pt-16 border-t border-slate-100 text-center flex flex-col items-center opacity-60">
+                        <div className="flex items-center gap-8 mb-6">
+                            <div className="h-[1px] w-20 bg-slate-200" />
+                            <img src="/logo.png" alt="AHS" className="h-12 grayscale" />
+                            <div className="h-[1px] w-20 bg-slate-200" />
+                        </div>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.8em] mb-3 leading-loose">Alexandria High School Conservatory &bull; System Integrity Lock</p>
+                        <p className="text-[9px] font-black text-[#D4AF37] uppercase tracking-[0.4em]">Official Administrative Access Portals</p>
+                    </div>
+
+                </div>
+            </div>
         </div>
     );
 };

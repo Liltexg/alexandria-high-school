@@ -109,7 +109,7 @@ const Applications = () => {
             if (error) throw error;
             setSelectedApp(prev => prev ? { ...prev, status: newStatus } : null);
 
-            // Institutional Audit Protocol
+            // School Audit Protocol
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 await supabase.from('audit_logs').insert([{
@@ -415,7 +415,7 @@ const Applications = () => {
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-[#b9d1ea] pb-4">
                 <div>
                     <h1 className="text-[22px] font-semibold text-[#003399] tracking-normal mb-1 flex items-center gap-2">
-                        <UsersIcon className="text-[#0055cc]" size={22} /> Enrollment Command Center
+                        <UsersIcon className="text-[#0055cc]" size={22} /> Applications Management
                     </h1>
                     <p className="text-[12px] text-slate-600 font-medium tracking-normal">Manage and review all online student applications.</p>
                 </div>
@@ -583,13 +583,12 @@ const Applications = () => {
                             </div>
                         </div>
 
-                        {/* File Tabs */}
                         <div className="h-10 bg-slate-50 border-b border-slate-200 px-6 flex items-center gap-6 shrink-0">
-                            {['Overview', 'Guardian Info', 'Academic Record', 'Decision Node'].map((tab) => (
+                            {['Overview', 'Guardian Info', 'Academic Record', 'Status'].map((tab) => (
                                 <button 
                                     key={tab}
-                                    onClick={() => setActiveTab(tab === 'Decision' || tab === 'Decision Node' ? 'Decision Engine' : tab)}
-                                    className={`h-full text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === (tab === 'Decision' || tab === 'Decision Node' ? 'Decision Engine' : tab) ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
+                                    onClick={() => setActiveTab(tab)}
+                                    className={`h-full text-[11px] font-bold uppercase tracking-widest transition-all border-b-2 ${activeTab === tab ? 'border-blue-600 text-blue-600' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
                                 >
                                     {tab}
                                 </button>
@@ -621,6 +620,10 @@ const Applications = () => {
                                                         <div>
                                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">ID Number</label>
                                                             <p className="text-lg font-bold text-slate-800">{selectedApp.id_number || 'N/A'}</p>
+                                                        </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Learner Cell</label>
+                                                            <p className="text-lg font-bold text-[#003366]">{selectedApp.learner_cell || 'Not Provided'}</p>
                                                         </div>
                                                         <div>
                                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Status</label>
@@ -661,9 +664,9 @@ const Applications = () => {
 
                                     {activeTab === 'Guardian Info' && (
                                         <div className="space-y-12">
-                                            {/* Primary Guardian */}
+                                            {/* Guardian 1 */}
                                             <section className="space-y-6">
-                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Primary Custodian Profile</h3>
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Guardian 1</h3>
                                                 <div className="grid grid-cols-2 gap-y-6 gap-x-12">
                                                     <div>
                                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name & Title</label>
@@ -678,27 +681,41 @@ const Applications = () => {
                                                         <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_id || 'N/A'}</p>
                                                     </div>
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Employment</label>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Occupation</label>
                                                         <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_occupation || 'N/A'}</p>
                                                         <p className="text-xs text-slate-400 uppercase">{selectedApp.parent_primary_employer || ''}</p>
                                                     </div>
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact Relay</label>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact Details</label>
                                                         <p className="text-md font-bold text-[#003366]">{selectedApp.parent_primary_contact}</p>
-                                                        <p className="text-xs text-slate-500">{selectedApp.parent_primary_email}</p>
+                                                         {selectedApp.parent_primary_tel_work && <p className="text-xs text-slate-500">Work: {selectedApp.parent_primary_tel_work}</p>}
                                                     </div>
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Marital State</label>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Marital Status</label>
                                                         <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_primary_marital_status || 'N/A'}</p>
                                                     </div>
                                                 </div>
+
+                                                {selectedApp.parent_signature && (
+                                                    <div className="mt-8 p-6 bg-slate-50 border border-slate-200 rounded">
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-4 border-b border-slate-200 pb-2">Signature</label>
+                                                        <div className="bg-white p-4 inline-block border border-slate-200 rounded shadow-sm">
+                                                            <img 
+                                                                src={selectedApp.parent_signature} 
+                                                                alt="Parent Signature" 
+                                                                className="h-16 grayscale opacity-80"
+                                                            />
+                                                        </div>
+                                                        <p className="text-[9px] text-slate-400 font-bold uppercase mt-2 tracking-tighter">Submitted on {new Date(selectedApp.created_at).toLocaleDateString()}</p>
+                                                    </div>
+                                                )}
                                             </section>
 
                                             <div className="h-px bg-slate-100 w-full" />
 
-                                            {/* Secondary Guardian */}
+                                            {/* Guardian 2 */}
                                             <section className="space-y-6">
-                                                <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-100">Secondary Custodian (If Applicable)</h3>
+                                                <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-100">Guardian 2</h3>
                                                 {selectedApp.parent_secondary_name ? (
                                                     <div className="grid grid-cols-2 gap-y-6 gap-x-12">
                                                         <div>
@@ -709,11 +726,39 @@ const Applications = () => {
                                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Relationship</label>
                                                             <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_secondary_relationship}</p>
                                                         </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact</label>
+                                                            <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_secondary_contact || 'N/A'}</p>
+                                                        </div>
                                                     </div>
                                                 ) : (
-                                                    <p className="text-xs text-slate-300 italic uppercase tracking-widest">No secondary custodian record detected.</p>
+                                                    <p className="text-xs text-slate-300 italic uppercase tracking-widest">No second guardian listed.</p>
                                                 )}
                                             </section>
+
+                                            {selectedApp.parent_tertiary_name && (
+                                                <>
+                                                    <div className="h-px bg-slate-100 w-full" />
+                                                    {/* Guardian 3 */}
+                                                    <section className="space-y-6">
+                                                        <h3 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest pb-2 border-b border-slate-100">Guardian 3</h3>
+                                                        <div className="grid grid-cols-2 gap-y-6 gap-x-12">
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Full Name</label>
+                                                                <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_tertiary_title || ''} {selectedApp.parent_tertiary_name} {selectedApp.parent_tertiary_surname}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Relationship</label>
+                                                                <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_tertiary_relationship}</p>
+                                                            </div>
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Contact</label>
+                                                                <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.parent_tertiary_cell || 'N/A'}</p>
+                                                            </div>
+                                                        </div>
+                                                    </section>
+                                                </>
+                                            )}
                                         </div>
                                     )}
 
@@ -721,7 +766,7 @@ const Applications = () => {
                                         <div className="space-y-12">
                                             {/* Current Schooling */}
                                             <section className="space-y-6">
-                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Educational Registry History</h3>
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Academic History</h3>
                                                 <div className="space-y-6">
                                                     <div>
                                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Previous Institution</label>
@@ -738,6 +783,17 @@ const Applications = () => {
                                                             <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Boarding Requirement</label>
                                                             <p className={`text-md font-bold uppercase ${selectedApp.is_boarder ? 'text-blue-600' : 'text-slate-400'}`}>{selectedApp.is_boarder ? 'PROPOSED BOARDER' : 'DAY STUDENT'}</p>
                                                         </div>
+                                                        <div>
+                                                            <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Academic History</label>
+                                                            <p className="text-md font-bold text-slate-800 uppercase">Passed Grade {selectedApp.highest_grade_passed || 'None'}</p>
+                                                            <p className="text-xs text-slate-400 uppercase tracking-widest">Year: {selectedApp.year_passed || 'N/A'}</p>
+                                                        </div>
+                                                        {selectedApp.grade_applying_for === '1' && (
+                                                            <div>
+                                                                <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Pre-Primary Status</label>
+                                                                <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.grade_1_pre_primary || 'Not Specified'}</p>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             </section>
@@ -746,34 +802,33 @@ const Applications = () => {
 
                                             {/* Operational Metadata */}
                                             <section className="space-y-6">
-                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Operational Protocol</h3>
+                                                <h3 className="text-[11px] font-bold text-blue-600 uppercase tracking-widest pb-2 border-b border-blue-50">Transport & Siblings</h3>
                                                 <div className="grid grid-cols-2 gap-12">
                                                     <div>
                                                         <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Transit Mode</label>
                                                         <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.mode_of_transport || 'NOT SPECIFIED'}</p>
                                                     </div>
                                                     <div>
-                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Siblings in Registry</label>
-                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.siblings_info ? 'MATCH DETECTED' : 'SOLITARY ENTRY'}</p>
-                                                        <p className="text-[10px] text-slate-400 uppercase">{selectedApp.siblings_info || 'No sibling details provided.'}</p>
+                                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Siblings</label>
+                                                        <p className="text-md font-bold text-slate-800 uppercase">{selectedApp.siblings_info ? 'YES' : 'NONE'}</p>
+                                                        <p className="text-[10px] text-slate-400 uppercase">{selectedApp.siblings_info || 'No siblings listed.'}</p>
                                                     </div>
                                                 </div>
                                             </section>
                                         </div>
                                     )}
 
-                                    {activeTab === 'Decision Engine' && (
+                                    {activeTab === 'Status' && (
                                         <div className="max-w-xl mx-auto py-10 space-y-10">
                                             <div className="border-b border-slate-100 pb-8">
-                                                <h3 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">Executive Adjudication</h3>
-                                                <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-2">Formal Record Update Node</p>
+                                                <h3 className="text-2xl font-bold text-slate-900 tracking-tight uppercase">Update Status</h3>
                                             </div>
                                             <div className="grid grid-cols-1 gap-3">
                                                 {[
                                                     { label: 'ACCEPT APPLICATION', status: 'Accepted', color: 'hover:bg-emerald-50 text-emerald-600 border-emerald-100', icon: CheckCircle },
-                                                    { label: 'REJECT RECORD', status: 'Rejected', color: 'hover:bg-rose-50 text-rose-600 border-rose-100', icon: XCircle },
-                                                    { label: 'WAITLIST NODE', status: 'Waitlisted', color: 'hover:bg-amber-50 text-amber-600 border-amber-100', icon: Clock },
-                                                    { label: 'FLAG AS INCOMPLETE', status: 'Awaiting Documents', color: 'hover:bg-blue-50 text-blue-600 border-blue-100', icon: FileText }
+                                                    { label: 'REJECT APPLICATION', status: 'Rejected', color: 'hover:bg-rose-50 text-rose-600 border-rose-100', icon: XCircle },
+                                                    { label: 'WAITLIST APPLICATION', status: 'Waitlisted', color: 'hover:bg-amber-50 text-amber-600 border-amber-100', icon: Clock },
+                                                    { label: 'AWAITING DOCUMENTS', status: 'Awaiting Documents', color: 'hover:bg-blue-50 text-blue-600 border-blue-100', icon: FileText }
                                                 ].map((action) => (
                                                     <button 
                                                         key={action.status}
@@ -797,17 +852,17 @@ const Applications = () => {
                             <div className="w-80 border-l border-slate-200 bg-slate-50 flex flex-col shrink-0">
                                 <div className="p-8 space-y-10">
                                     <section className="space-y-4">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Relay Protocol</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Communication History</label>
                                         <div className="grid grid-cols-1 gap-2">
-                                            <button onClick={() => handleEmailResponse(selectedApp, 'accepted')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-blue-500" /> Confirm Entry</button>
-                                            <button onClick={() => handleEmailResponse(selectedApp, 'rejected')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-rose-500" /> Formal Exit</button>
+                                            <button onClick={() => handleEmailResponse(selectedApp, 'accepted')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-blue-500" /> Accept Application</button>
+                                            <button onClick={() => handleEmailResponse(selectedApp, 'rejected')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><Mail size={16} className="text-rose-500" /> Reject Application</button>
                                             <button onClick={() => handleEmailResponse(selectedApp, 'incomplete')} className="win7-button !justify-start !text-[11px] !h-12 !px-4 !bg-white !font-bold uppercase tracking-wide"><MessageSquare size={16} className="text-amber-500" /> Request Docs</button>
                                         </div>
                                         <button onClick={() => handleCall(selectedApp)} className="win7-button w-full !h-16 !bg-[#003366] !text-white !border-none !text-[13px] !font-bold tracking-[0.2em] uppercase gap-4 mt-4 shadow-lg active:scale-95 transition-all"><Phone size={18} /> CONTACT PARENT</button>
                                     </section>
 
                                     <section className="pt-10 border-t border-slate-200 space-y-4">
-                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Institutional Storage</label>
+                                        <label className="text-[10px] font-bold text-slate-400 uppercase tracking-[0.2em] block px-1">Permanent Archive</label>
                                         <div className="flex gap-2">
                                             <button 
                                                 onClick={async () => {

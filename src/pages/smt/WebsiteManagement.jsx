@@ -74,7 +74,7 @@ const WebsiteManagement = () => {
             setSlides([...slides, data[0]]);
             setNewSlide({ image: '', tag: '', title: '', styledtitle: '', desc: '' });
 
-            // Institutional Digital Audit
+            // Website Digital Audit
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 await supabase.from('audit_logs').insert([{
@@ -96,7 +96,7 @@ const WebsiteManagement = () => {
     };
 
     const handleImportDefaults = async () => {
-        if (!confirm('This will import the 3 default institutional slides into the database. Proceed?')) return;
+        if (!confirm('This will import the 3 default school slides into the database. Proceed?')) return;
         setImporting(true);
         try {
             const { data, error } = await supabase

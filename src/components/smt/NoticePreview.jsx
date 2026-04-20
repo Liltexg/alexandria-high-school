@@ -103,7 +103,7 @@ const NoticePreview = ({ title, body, bodyAfrikaans, publishAt, targetGroup }) =
                 </div>
 
                 <div className="text-[9px] uppercase font-bold text-slate-400 text-right leading-tight">
-                    <p>ALEXANDRIA HIGH SCHOOL</p>
+                    <p>Alexandria High School</p>
                     <p>P. O. Box / Posbus 43</p>
                     <p>ALEXANDRIA 6185.</p>
                     <p>Tel : 046 - 6530126</p>

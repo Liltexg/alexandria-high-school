@@ -3,7 +3,7 @@ import { Outlet, Navigate, Link, useLocation, useNavigate } from 'react-router-d
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '../../lib/supabaseClient';
 import { LogOut, Shield, Monitor, AlertTriangle, X, CheckCircle, FileText, Layout as LayoutIcon, Menu } from 'lucide-react';
-import { InstitutionalShield, AdmissionLedger, NewsroomIcon, StaffDirectoryIcon } from './Icons';
+import { SchoolShield, AdmissionLedger, NewsroomIcon, StaffDirectoryIcon } from './Icons';
 import logo from '../../assets/logo.png';
 
 const SMTLayout = () => {
@@ -78,7 +78,7 @@ const SMTLayout = () => {
     }
 
     const navItems = [
-        { path: '/smt', icon: InstitutionalShield, label: 'Dashboard' },
+        { path: '/smt', icon: SchoolShield, label: 'Dashboard' },
         { path: '/smt/notices', icon: FileText, label: 'Notices Board' },
         { path: '/smt/news', icon: NewsroomIcon, label: 'Newsroom' },
         { path: '/smt/applications', icon: AdmissionLedger, label: 'Applications' },
@@ -215,7 +215,7 @@ const SMTLayout = () => {
                                             <div>
                                                 <h2 className="text-xl sm:text-2xl font-bold text-[#003399] tracking-tight mb-2 sm:mb-3">Professional Environment</h2>
                                                 <p className="text-[12px] sm:text-[14px] text-slate-600 leading-relaxed font-medium">
-                                                    You are entering the Alexandria High School Administrative Core. This workstation handles confidential institutional data protected by international privacy standards.
+                                                    You are entering the Alexandria High School Administrative Core. This workstation handles confidential school data protected by international privacy standards.
                                                 </p>
                                             </div>
                                         </div>
@@ -342,7 +342,7 @@ const SMTLayout = () => {
                                 <div className="flex flex-col sm:flex-row h-auto max-h-[60vh] md:h-[450px]">
                                     {/* App Lists */}
                                     <div className="flex-1 bg-white p-4 sm:p-6 overflow-y-auto">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2 italic font-win">Institutional Controls</p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-4 px-2 italic font-win">School Controls</p>
                                         <div className="grid grid-cols-1 gap-1">
                                             {navItems.map((item) => (
                                                 <Link

@@ -12,7 +12,7 @@ const Farewell = () => {
         <section className="bg-slate-50 py-32 border-b border-slate-200">
             <div className="container-wide">
                 <div className="max-w-4xl mx-auto text-center mb-20 text-dark">
-                    <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-8 block font-win">Institutional Archive // Special Event</span>
+                    <span className="text-primary font-black uppercase tracking-[0.4em] text-[10px] mb-8 block font-win">Official Archive // Special Event</span>
                     <h2 className="text-5xl md:text-8xl font-black text-dark mb-10 tracking-tighter leading-none">
                         Celebrating <br className="hidden md:block" />
                         <span className="text-serif italic text-primary">Mrs Eleanor Taai.</span>

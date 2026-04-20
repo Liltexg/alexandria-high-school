@@ -230,7 +230,7 @@ const Login = () => {
 
 
                 <div className="fixed bottom-12 right-12 pointer-events-none opacity-40">
-                    <p className="text-[13px] font-medium text-white tracking-[0.4em] uppercase">Apex OS // Institutional Console</p>
+                    <p className="text-[13px] font-medium text-white tracking-[0.4em] uppercase">Apex OS // Administrator Console</p>
                 </div>
             </div>
         </>

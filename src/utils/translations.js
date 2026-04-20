@@ -97,7 +97,7 @@ export const translations = {
         about: {
             legacy_title: "Legacy & <span class='text-serif'>Distinction</span>",
             legacy_subtitle: "Alexandria High School is a place of regional excellence, committed to forging leaders through dignity and critical scholarship.",
-            ethos_tag: "Institutional Ethos",
+            ethos_tag: "School Ethos",
             integrity_title: "Leadership Through <br /> <span class='text-serif italic text-primary'>Academic Integrity.</span>",
             quote: "\"We do not merely educate; we prepare our learners for a life of responsible, high-impact contribution.\"",
             school_desc: "Alexandria High School is a public school serving our community from foundation to matriculation. As a Quintile 3 school, we provide no-fee education, ensuring that quality learning is accessible to all.",
@@ -192,7 +192,7 @@ export const translations = {
             chronicles: "CHRONICLES",
             default_updates: [
                 {
-                    tag: "Institutional",
+                    tag: "Academic",
                     title: "Celebrating the Leadership of Mrs Eleanor Taai",
                     desc: "On 26 March 2026, we honored our beloved Principal for her dedicated service and wisdom.",
                     date: "26 MAR 2026"
@@ -245,10 +245,10 @@ export const translations = {
                 {
                     title: "Senior Phase",
                     grades: "Grades 4 — 9",
-                    desc: "Helping learners grow in confidence and knowledge as they prepare for high school."
+                    desc: "Helping learners grow in confidence and knowledge as they prepare for the FET Phase."
                 },
                 {
-                    title: "High School",
+                    title: "FET Phase",
                     grades: "Grades 10 — 12",
                     desc: "Guiding students through their final years with focus and support for their matric exams."
                 }
@@ -457,7 +457,7 @@ export const translations = {
         about: {
             legacy_title: "Erfenis & <span class='text-serif'>Onderskeiding</span>",
             legacy_subtitle: "Hoërskool Alexandria is 'n plek van streekuitnemendheid, toegewyd aan die vorming van leiers deur waardigheid en kritiese wetenskap.",
-            ethos_tag: "Institusionele Etos",
+            ethos_tag: "Skool Etos",
             integrity_title: "Leierskap Deur <br /> <span class='text-serif italic text-primary'>Akademiese Integriteit.</span>",
             quote: "\"Ons voed nie net op nie; ons berei ons leerders voor vir 'n lewe van verantwoordelike bydrae met 'n hoë impak.\"",
             school_desc: "Hoërskool Alexandria is 'n openbare skool wat ons gemeenskap bedien van grondslag tot matrikulasie. As 'n Kwintiel 3-skool bied ons gratis onderwys, wat verseker dat gehalte-leer vir almal toeganklik is.",
@@ -552,7 +552,7 @@ export const translations = {
             chronicles: "KRONIEKE",
             default_updates: [
                 {
-                    tag: "Institusioneel",
+                    tag: "Akademies",
                     title: "Viering van mev. Eleanor Taai se Leierskap",
                     desc: "Op 26 Maart 2026 het ons ons geliefde Skoolhoof geëer vir haar toegewyde diens en wysheid.",
                     date: "26 MRT 2026"
@@ -605,10 +605,10 @@ export const translations = {
                 {
                     title: "Seniorfase",
                     grades: "Grade 4 — 9",
-                    desc: "Help leerders om in vertroue en kennis te groei terwyl hulle voorberei vir hoërskool."
+                    desc: "Help leerders om in vertroue en kennis te groei terwyl hulle voorberei vir die VOO-fase."
                 },
                 {
-                    title: "Hoërskool",
+                    title: "VOO-fase",
                     grades: "Grade 10 — 12",
                     desc: "Begeleiding van studente deur hul finale jare met fokus en ondersteuning vir hul matriekeksamens."
                 }

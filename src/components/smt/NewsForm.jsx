@@ -59,7 +59,7 @@ const NewsForm = ({ article = null, onSuccess, onCancel }) => {
 
             if (error) throw error;
 
-            // Institutional News Protocol Audit
+            // School News Protocol Audit
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 await supabase.from('audit_logs').insert([{
@@ -90,7 +90,7 @@ const NewsForm = ({ article = null, onSuccess, onCancel }) => {
                 .eq('id', article.id);
             if (error) throw error;
 
-            // Institutional News Protocol Audit
+            // School News Protocol Audit
             try {
                 const { data: { user } } = await supabase.auth.getUser();
                 await supabase.from('audit_logs').insert([{

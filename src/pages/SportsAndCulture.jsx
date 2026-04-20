@@ -199,7 +199,7 @@ const SportsAndCulture = () => {
                 </div>
                 
                 <div className="mt-40 border-t border-white/5 pt-12 text-center pb-12">
-                    <p className="text-[10px] font-black uppercase tracking-[0.8em] text-white/20">Alexandria High Institutional Registry // 1960 - 2026</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.8em] text-white/20">Alexandria High Official Registry // 1960 - 2026</p>
                 </div>
             </section>
         </div>

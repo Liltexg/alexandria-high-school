@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, FileText, Activity, Clock, Shield, Search, ArrowRight } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
-import { InstitutionalShield, AdmissionLedger, NewsroomIcon, StaffDirectoryIcon } from '../../components/smt/Icons';
+import { SchoolShield, AdmissionLedger, NewsroomIcon, StaffDirectoryIcon } from '../../components/smt/Icons';
 import { Link, useNavigate } from 'react-router-dom';
 
 const DashboardCard = ({ title, value, label, icon: Icon, colorClass }) => (
@@ -67,7 +67,6 @@ const Dashboard = () => {
         // Realtime Operational Protocol: Specific High-Fidelity Sync
         const liveStatsChannel = supabase
             .channel('dashboard-live-stats')
-            // Listen for any change in CORE institutional tables
             .on('postgres_changes', { event: '*', schema: 'public', table: 'applications' }, () => fetchStats())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'notices' }, () => fetchStats())
             .on('postgres_changes', { event: '*', schema: 'public', table: 'news' }, () => fetchStats())
@@ -90,7 +89,7 @@ const Dashboard = () => {
             case 'WEBSITE_REMOVE': return `Website Item Removed: ${log.details?.title || 'Slide'}`;
             case 'NOTICE_PUBLISH': return `Notice Broadcast Initiated: ${log.details?.title}`;
             case 'NOTICE_UPDATE': return `Notice Records Updated: ${log.details?.title}`;
-            case 'NEWS_PUBLISH': return `Institutional News Published: ${log.details?.title}`;
+            case 'NEWS_PUBLISH': return `Official News Published: ${log.details?.title}`;
             case 'NEWS_UPDATE': return `News Records Refined: ${log.details?.title}`;
             case 'NEWS_REMOVE': return `News Article Removed: ${log.details?.title}`;
             default: return log.action.replace(/_/g, ' ');
@@ -127,7 +126,7 @@ const Dashboard = () => {
                     <h1 className="text-5xl font-black text-[#003366] tracking-tighter mb-2 italic">
                         Command Dashboard
                     </h1>
-                    <p className="text-[13px] text-slate-500 font-bold tracking-normal font-win uppercase opacity-70">Institutional Status & Communication Protocols</p>
+                    <p className="text-[13px] text-slate-500 font-bold tracking-normal font-win uppercase opacity-70">Official Status & Communication Protocols</p>
                 </div>
                 <div className="flex items-center gap-4 bg-white/50 backdrop-blur-md p-4 rounded-[4px] border border-[#a3c3e6] shadow-xl">
                     <div className="text-right">
